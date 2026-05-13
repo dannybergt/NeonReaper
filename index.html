@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a14" />
+    <meta name="description" content="NeonReaper — 2.5D isometric neon-noir auto-shooter" />
+    <title>NeonReaper</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        background: #05050a;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: #e0e8ff;
+      }
+      #game {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #game canvas {
+        display: block;
+        max-width: 100vw;
+        max-height: 100vh;
+        image-rendering: pixelated;
+      }
+      .boot-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: #ff2bd6;
+        text-shadow: 0 0 8px #ff2bd6aa;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game">
+      <div class="boot-fallback">loading neonreaper</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

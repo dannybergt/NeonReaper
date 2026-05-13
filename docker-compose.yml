@@ -1,0 +1,13 @@
+services:
+  neonreaper:
+    build: .
+    image: neonreaper:dev
+    container_name: neonreaper-web
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
