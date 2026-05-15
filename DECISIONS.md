@@ -4,6 +4,7 @@ Chronologisch absteigend (jüngste oben). Vollformat-ADRs liegen unter `docs/adr
 
 | ID  | Datum       | Titel                                              | Status   |
 |-----|-------------|----------------------------------------------------|----------|
+| 009 | 2026-05-15  | Genre-Pivot: Lane-Squad-Defense (supersedes 001/002/003/005/006) | Accepted |
 | 008 | 2026-05-15  | 100% custom-rendered Sprites via Phaser Graphics | Accepted |
 | 007 | 2026-05-15  | Visual Pivot: Last-War-Polish-Look (supersedes ADR-001 Genre-Teil) | Accepted |
 | 006 | 2026-05-15  | Boss bei Minute 5 (Pressure-Spike-Event) | Accepted |

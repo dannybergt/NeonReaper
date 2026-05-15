@@ -1,130 +1,78 @@
 # NeonReaper — Current State
 
-_Last updated: 2026-05-15 (Phase 3a — Visual-Pivot + Spawn-Fix)_
+_Last updated: 2026-05-15 (Genre-Pivot: Lane-Squad-Defense)_
 
 ## What's running
 
-Nichts läuft als Service. Lokal **typecheck ✅**, **vitest 47/47 ✅**, **build ✅**.
-Browser-Manual-Run für Phase 1+2 steht weiterhin aus.
+Nichts läuft als Service. Lokal **typecheck ✅**, **vitest 26/26 ✅**, **build ✅** (App-Bundle 25.88 kB).
+Phase 1+2-Survivor-Code wurde komplett entfernt — Branches `feature/phase-1-2-progression-pressure` (`8a41899`) und `feature/phase-3-visual-pivot` (`6380f2c`) bleiben als Archiv im Repo.
 
 ## Allocated Ports
 
 | Port | Service        | Note                                   |
 |------|----------------|----------------------------------------|
-| 5173 | Vite Dev       | nicht aktiv — gestartet via `npm run dev` |
-| 8080 | nginx (Docker) | nicht aktiv — gestartet via `docker compose up` |
+| 5173 | Vite Dev       | Standard — Vite wechselt automatisch wenn belegt (5174/5175/…) |
+| 8080 | nginx (Docker) | nicht aktiv |
 
-Aktuell keine Ports allokiert. Vor jedem Start: Port-Check.
+## Was wurde gemacht (Session 2026-05-15 — Genre-Pivot Lane-Defense)
 
-## Was wurde gemacht (Session 2026-05-15 — Phase 3a: Visual-Pivot + Spawn-Fix)
+**ADR-009** widerruft ADR-001/002/003/005/006. Neues Genre laut Owner-Brief: Lane-Squad-Defense im Polish-Look der Last-War-Survival-Werbevideos.
 
-**Pivot:** ADR-001-Genre-Teil widerrufen durch ADR-007. Look-Vorbild ist jetzt **Last War: Survival** (Special Ops / Frontline Breakthrough Ad-Mode) — post-apokalyptisch, Soldat vs Zombies, gedämpfte Erdtöne + warme Akzente. Custom-rendered (ADR-008), keine externen Assets.
-
-- **ADR-007** (Visual Pivot) + **ADR-008** (100% Custom-Sprites) geschrieben.
-- **`src/render/SpriteFactory.ts`** — neuer zentraler Sprite-Generator. Eine `buildAllTextures(scene)`-Funktion liefert alle 13 Texturen (Player, 3 Zombie-Typen, Boss, Bullets, Muzzle-Flash, Gem, Hit-Spark, Smoke, Asphalt-Tile, Rubble).
-- **PreloadScene** ruft `buildAllTextures` statt inline-Generierung.
-- **GAME_CONFIG.palette** komplett ersetzt: Asphalt-Grau-Basis + Khaki-Player + Zombie-Brown-Töne + warmer Mündungs-/Bullet-Glow.
-- **Background**: tileSprite mit Asphalt + Straßenmarkierung-Pattern + 36 zufällig platzierte Schutt-Sprites statt Neon-Grid.
-- **Player-Direction**: Sprite rotiert zum nearest enemy (oder zur Bewegungsrichtung wenn keiner da). Schuss-Spawn-Punkt verschiebt sich zum Waffenlauf.
-- **Muzzle-Flash**: ADD-Blendmode-Sprite am Lauf bei jedem Schuss, 80ms Tween.
-- **Hit-Sparks**: 3 Particles spritzen bei jedem Bullet-Hit.
-- **Death-Smoke**: 3 Smoke-Puffs bei jedem Enemy-Tod.
-- **Spawn-Bug-Fix (`SpawnZone.ts`)**: Gegner spawnen jetzt auf einem **Rechteck-Rand knapp außerhalb des sichtbaren Camera-Bereichs**, gleichmäßig auf alle 4 Seiten verteilt. Pure function, 4 Vitest-Tests. Bisheriges Kreis-Spawn führte dazu dass Gegner gefühlt "alle von oben/vorn" kamen, weil Viewport 16:9 ist und Vertikal-Spawns weiter außerhalb des Sichtfeldes lagen.
-- **MenuScene** Branding: "REAPER" + warmer Orange-Button statt Pink.
-
-## Was wurde gemacht (Session 2026-05-15 — Phase 2d: Boss bei Minute 5)
-
-- **BossSystem** (`src/systems/BossSystem.ts`):
-  - `BOSS_CONFIG` — HP 2500, Speed 36, Damage 35 (throttled), 8-Way-Spread alle 2 s, Bullet-Speed 220.
-  - `shouldSpawnBoss(elapsedSec, alreadySpawned)` — Pure Boolean.
-  - `bulletPatternAngles(count, baseAngle)` — Pattern-Generator, deterministisch.
-  - 7 Vitest-Tests grün.
-- **Boss in GameScene**:
-  - Einmaliger Spawn bei 300 s mit Cam-Flash + Shake.
-  - Contact-Damage throttled (500 ms), Boss überlebt Player-Berührung.
-  - Telegrafierter 8-Way-Spread rotiert pro Schuss um π/16.
-  - `enemyBullets`-Group + Player-Overlap → Curse-`incomingDamage` greift hier auch.
-  - Boss-Kill: Cam-Flash, alle Enemy-Bullets despawn, XP-Stream-Drop (50× 1 XP in Spirale).
-- **Boss-HUD**: zentrale HP-Bar oben mit Label "REAPER LORD", nur sichtbar während Boss lebt.
-- **PreloadScene**: `tex_boss` (großer pulsierender Orb), `tex_enemy_bullet` (Magenta).
-- **ADR-006** geschrieben.
-
-## Was wurde gemacht (Session 2026-05-15 — Phase 2c: Curse-Elites)
-
-- **CurseSystem** (`src/systems/CurseSystem.ts`):
-  - 3-Curse-Pool: Heavy Hand (FireRate ×1.3), Brittle Bones (incoming ×1.25), Foggy Aim (Range ×0.7).
-  - `addCurse`, `tickCurses`, `effectiveMult(state, key)` — pure, stack-fähig, 8 Vitest-Tests grün.
-- **Curse-Elites** in EnemyTypes:
-  - Unlock 180 s, Chance rampt 0 → 18% über 240 s.
-  - Cursed: HP×1.5, Damage×1.5, XP×3, Score×4, visuell pulse-tween + Tint.
-- **GameScene**:
-  - `pistolRange`, `pistolFireRateMs`, `incomingDamage` werden mit Curse-Mults multipliziert.
-  - Cursed-Kill triggert `addCurse` + pinker Cam-Flash.
-  - HUD listet aktive Curses + Restzeit.
-- **ADR-005** geschrieben (revoked ADR-002 YAGNI für Modifier-Stack).
-
-## Was wurde gemacht (Session 2026-05-15 — Phase 2a + 2b)
-
-- **EnemyTypes** (`src/systems/EnemyTypes.ts`):
-  - Walker (24 HP / 70 speed / 8 dmg), Runner (12 HP / 140 speed / 6 dmg, ab 30 s), Brute (110 HP / 42 speed / 22 dmg, ab 90 s)
-  - `pickEnemyType(elapsedSec, rng)` — pure, gewichtet, deterministic. 8 Vitest-Tests grün.
-  - `GAME_CONFIG.enemy.*` entfernt (war Duplikat); ENEMY_TYPES ist neue Wahrheit.
-- **HeatSystem** (`src/systems/HeatSystem.ts`):
-  - Heat steigt pro Schuss (+4.5), decayed pro Sekunde (-18). Threshold bei 70/100, max FireRate-Penalty 1.7× Cooldown.
-  - Pure module, 8 Vitest-Tests grün.
-- **GameScene** umgebaut:
-  - Spawning gewichtet nach Zeit.
-  - Enemy-AI nutzt typ-spezifische Speed.
-  - Schaden bei Player-Hit, XP- und Score-Reward typ-spezifisch.
-  - Auto-Fire ruft `registerShot` + appliziert `fireRateMultiplier`.
-  - HUD um Heat-Bar (orange→rot bei Overheat) + Overheat-Indikator erweitert.
-- **PreloadScene** generiert zwei neue Texturen (`tex_enemy_runner` orange Dreieck, `tex_enemy_brute` lila Kreis mit Kern).
-- **ADR-003** (Heat) + **ADR-004** (Enemy-Variants) geschrieben.
-
-## Was wurde gemacht (Session 2026-05-15 — Phase 1 Slice)
-
-- **XP-System:** Enemies droppen `tex_xp`-Gem, Player magnetisiert im `pickupRadius`. Level-up bei `xp >= xpToNextLevel(level)`, Carry-Over bei Überschuss. Despawn nach 30 s.
-- **Upgrade-System** (`src/systems/UpgradeSystem.ts`):
-  - Pool aus 8 Upgrades (common/rare/epic).
-  - `pickUpgrades(k, rng)` — pure, deterministisch testbar via injizierter RNG.
-  - Trade-Off-Upgrade `rampage` (+50% Damage, −10% Max HP) als erstes Stärke-kann-sinken-Element.
-- **`LevelUpScene`** — Overlay-Scene, pausiert Physics-World, zeigt 3 Cards, Auswahl via Maus oder `1/2/3`.
-- **`GameOverScene`** — Score/Level/Time, Restart auf `R/Space/Enter`, Menu auf `M/Esc`.
-- **`PlayerStats`** (`src/systems/PlayerStats.ts`) — mutables Run-State-Objekt, `createDefaultStats()` reset-fest.
-- **HUD erweitert** — XP-Balken, Level-Anzeige, `HP cur/max`.
-- **Config** (`src/config/game.ts`) — `enemy.xpReward`, `xp.gemMagnetSpeed`, `xp.gemPickupRadius`, `xp.gemDespawnMs`.
-- **Vitest aktiviert** — `vitest.config.ts` + `tests/UpgradeSystem.test.ts` + `tests/PlayerStats.test.ts` (13 Tests grün).
-- **ADR-002** geschrieben (`docs/adr/002-progression-and-upgrades.md`).
+- **Brief umgeschrieben** (`PROJECT_BRIEF.md`): Lane-Squad-Defense.
+- **Obsolete Module gelöscht**: PlayerStats, UpgradeSystem, EnemyTypes, HeatSystem, CurseSystem, BossSystem, SpawnZone, LevelUpScene, GameOverScene + alle zugehörigen Tests.
+- **Neue Lane-Defense-Module**:
+  - `src/systems/Squad.ts` — SquadState (troops, damageTier, fireRate), apply* mutations.
+  - `src/systems/EnemyGroup.ts` — Enemy-Tiers (grunt/shocktrooper/heavy) mit Stats.
+  - `src/systems/Combat.ts` — Auto-Combat-Tick zwischen Squad und Enemy-Group.
+  - `src/systems/Gates.ts` — 5 Gate-Typen (`+N`/`×N`/`-N`/`+DMG`/`×DMG`), `applyGate`, `gateVisual`, `rollGatePair`.
+  - `src/systems/Waves.ts` — `buildWave1()` als gescriptete Tutorial-Welle (Gates + Enemies + Boss).
+- **SpriteFactory neu** (`src/render/SpriteFactory.ts`):
+  - `tex_soldier` — 20×24 Top-Down-Soldat mit Helm, Visor, Gewehr nach oben.
+  - `tex_enemy_soldier`/`tex_enemy_shock`/`tex_enemy_heavy` — drei Enemy-Tiers.
+  - `tex_boss` — 200×144 Mutant Reaper Lord.
+  - `tex_bullet`/`tex_enemy_bullet`/`tex_muzzle_flash` — Vertikal-orientierte Projectiles.
+  - `tex_gate_frame` — Crossbar + 2 Pylons (Tint-fähig pro Gate-Typ).
+  - `tex_lane_tile` (scrollend) + `tex_lane_edge` (Side-Curbs).
+- **GameScene komplett neu**:
+  - Vertikales Spielfeld (720×1280 portrait).
+  - Lane-Tile scrollt nach unten, scrolledPx misst Welt-Distanz.
+  - Squad fixiert am unteren Drittel, nur horizontale Bewegung via ←/→ oder Maus/Touch-Drag.
+  - Squad-Formation in Grid (max 6 Spalten), rebuild bei Troop-Änderung.
+  - Auto-Fire: pro visible Trooper ein Bullet alle `fireRateMs`, Muzzle-Flash am Lauf.
+  - Wave-Schedule spawnt Gates/EnemyGroups/Boss bei vordefinierten `distance`-Markern.
+  - Gates pulsieren visuell, Squad-vs-Gate-Overlap appliziert Effekt einmalig.
+  - Enemy-vs-Squad-Combat als Tick alle 250ms wenn Bounding-Boxes überlappen.
+  - Boss-Spawn am Wave-Ende: Cam-Flash + Shake, eigener Bullet-Pattern (5-Way Spread), Boss-HP-Bar oben center.
+  - GameOver bei Squad=0 ("SQUAD WIPED"), Win bei Boss-Tod ("WAVE 1 CLEARED").
+- **MenuScene neu**: "REAPER — LANE-SQUAD DEFENSE", Controls-Hinweise, "▶ ENTER THE LANE".
+- **GAME_CONFIG** komplett umgeschrieben für portrait + Lane-Werte.
 
 ## Offene Threads / Blocker
 
-- 🔴 **Push schlägt fehl** (unverändert seit 2026-05-13) — `gh auth refresh -h github.com -s workflow`, dann `git push -u origin main`.
-- ⬜ Docker-Hub-Repo `dannybergt/neonreaper` und gh secrets `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN` stehen noch aus.
-- ⬜ **Manuelle Browser-Verifikation** ist offen — siehe "Bewusst nicht getan".
+- 🔴 **Push schlägt fehl** (unverändert) — `gh auth refresh -h github.com -s workflow`, dann `git push -u origin main`.
+- ⬜ Docker-Hub-Repo + gh secrets ausstehend.
+- ⬜ **Browser-Verifikation** der Lane-Mechanik durch Owner — der eigentliche Acceptance-Test diesmal.
 
-## Bewusst nicht getan
+## Bewusst nicht angefasst
 
-- Kein Browser-Klickdurchlauf der neuen Level-Up- und GameOver-Scenes. Headless-Bash kann den Phaser-Game-Loop nicht im Browser steuern; HTTP-Smoke ersetzt das nicht. **Vor Phase-2-Start im Browser durchklicken**: Run starten → XP einsammeln → Level-Up → Card pick → Run weiter → Tod → Restart und Menu testen.
-- Kein Heat-System / Curse-Elite (Stärke-Senkungs-Mechaniken #1+#2 aus dem Brief) — bewusst auf Phase 2 geschoben. Trade-Off-Upgrade `rampage` ist erster Träger der USP.
-- Keine zusätzlichen Gegner-Typen (Runner, Brute) — Phase 2.
-- Kein Audio, kein Bloom-Post-Effekt — Phase 2.
+- Audio (kommt in nächstem Slice nach Owner-OK auf Lane-Mechanik).
+- Particle-Bullet-Trails als Phaser-FX-Pipeline.
+- Tilt-/Pseudo-3D-Iso-Look.
+- Mehrere Wellen + Procedural-Wave-Generator (Wave 1 ist hand-scripted).
+- Permanent-Meta-Progression / Upgrades zwischen Runs.
+- Capacitor-Mobile-Build.
 
-## Annahmen (vom User widerrufbar)
+## Annahmen (vom Owner widerrufbar)
 
-- XP-Curve `round(8 * level^1.5)` — Lvl 1: 8, Lvl 5: 89, Lvl 10: 253.
-- Trade-Off-Upgrade-Rate = 1/8 im Pool (nur `rampage`). Skalieren wir später hoch, wenn die USP zu schwach durchkommt.
-- Restart aktuell ohne Bestätigung → schnellere Iteration im Playtest.
-- LevelUpScene blockiert kompletten Game-Loop (Physics paused). Bewusst, damit kein "fair shot" verloren geht.
+- Wave 1 dauert ca. 35-40 s bei scrollSpeed=140.
+- Squad start mit 8 Truppen, Damage-Tier 1.
+- Combat-Tick alle 250ms, Damage 0.6 pro Truppe pro Tick.
+- Boss-HP 220, Bullet-Damage 1 (Squad), 1 (Boss-Bullet).
+- Steuerung-Stil: Drag UND Pfeiltasten gleichzeitig erlaubt.
 
 ## Nächster sinnvoller Schritt
 
-1. **Browser-Verifikation** für Phase 1 **+ Phase 2a/2b**:
-   - Run starten → Walker spawnen, bei 30 s+ Runner, bei 90 s+ Brute.
-   - Sustained Fire → Heat steigt, ab 70% Penalty, Overheat-Indikator im HUD sichtbar.
-   - Brute mehrere Sek. ohne Pause beschießen → erzwingt Overheat → testet USP.
-   - Level-Up + Card pick weiter wie Phase 1.
-2. Push-Blocker auflösen (User-Aktion: `gh auth refresh -h github.com -s workflow`).
-3. **Phase-2-Rest-Slices** (in dieser Reihenfolge empfohlen):
-   - 2e Zweite Waffenkategorie (Shotgun) — verbessert Upgrade-Pool-Choice & gibt Heat-Mechanik mehr Texture.
-   - 2f Audio-Layer (SFX + Royalty-free Track).
-   - Phase 3 Polish: Bloom-Postprocess, Hit-Stop, Iso-Tilemap.
+1. **Browser-Verifikation** durch Owner — fühlt sich das nach Last-War-Werbung an?
+2. Tuning (vermutlich nötig: Combat-Math, Gate-Spawn-Tempo, Squad-Move-Speed).
+3. Falls OK: Wave 2..N + Wave-Generator + Score-Tracking.
+4. Audio-Layer (SFX + Royalty-free Loop).
