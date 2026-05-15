@@ -29,6 +29,7 @@ import {
   type CurseState,
 } from "@/systems/CurseSystem";
 import { BOSS_CONFIG, bulletPatternAngles, shouldSpawnBoss } from "@/systems/BossSystem";
+import { pickSpawnPoint } from "@/systems/SpawnZone";
 
 type Enemy = Phaser.Physics.Arcade.Sprite & {
   hp?: number;
@@ -110,7 +111,7 @@ export class GameScene extends Phaser.Scene {
     this.drawGridBackdrop(width * 4, height * 4);
 
     this.player = this.physics.add.sprite(0, 0, "tex_player");
-    this.player.setCircle(14).setOffset(2, 2);
+    this.player.setCircle(12).setOffset(8, 8);
     this.player.setCollideWorldBounds(false);
     this.physics.world.setBounds(-width * 2, -height * 2, width * 4, height * 4);
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -174,19 +175,32 @@ export class GameScene extends Phaser.Scene {
     if (this.cursors.down?.isDown || this.wasd.S.isDown) vy += 1;
     const len = Math.hypot(vx, vy) || 1;
     this.player.setVelocity((vx / len) * speed, (vy / len) * speed);
+
+    // Aim faces the nearest enemy if any, else direction of motion.
+    const target = this.findNearestEnemy();
+    if (target) {
+      this.player.setRotation(Math.atan2(target.y - this.player.y, target.x - this.player.x));
+    } else if (vx !== 0 || vy !== 0) {
+      this.player.setRotation(Math.atan2(vy, vx));
+    }
   }
 
   private handleSpawning(time: number): void {
     if (time < this.nextSpawnAt) return;
     this.nextSpawnAt = time + this.spawnIntervalMs;
     const cam = this.cameras.main;
-    const angle = Math.random() * Math.PI * 2;
-    const dist = Math.max(cam.width, cam.height) * 0.7;
-    const x = this.player.x + Math.cos(angle) * dist;
-    const y = this.player.y + Math.sin(angle) * dist;
+    const halfW = cam.width / (cam.zoom || 1) / 2;
+    const halfH = cam.height / (cam.zoom || 1) / 2;
+    const spawn = pickSpawnPoint({
+      centerX: this.player.x,
+      centerY: this.player.y,
+      halfWidth: halfW,
+      halfHeight: halfH,
+      buffer: GAME_CONFIG.spawner.offscreenBuffer,
+    });
     const typeId = pickEnemyType(this.elapsedSec);
     const cursed = rollCursedElite(this.elapsedSec);
-    this.spawnEnemyOfType(x, y, typeId, cursed);
+    this.spawnEnemyOfType(spawn.x, spawn.y, typeId, cursed);
   }
 
   private spawnEnemyOfType(x: number, y: number, typeId: EnemyTypeId, cursed: boolean): void {
@@ -237,11 +251,71 @@ export class GameScene extends Phaser.Scene {
     const cursePenalty = effectiveMult(this.curses, "pistolFireRateMs");
     this.nextFireAt = time + this.stats.pistolFireRateMs * heatPenalty * cursePenalty;
     registerShot(this.heat);
-    const bullet = this.bullets.create(this.player.x, this.player.y, "tex_bullet") as Bullet;
+
+    const aim = Math.atan2(dy, dx);
+    const muzzleOffset = 24;
+    const mx = this.player.x + Math.cos(aim) * muzzleOffset;
+    const my = this.player.y + Math.sin(aim) * muzzleOffset;
+    const bullet = this.bullets.create(mx, my, "tex_bullet") as Bullet;
+    bullet.setRotation(aim);
     bullet.setData("damage", this.stats.pistolDamage);
     bullet.setData("spawnedAt", time);
     const inv = 1 / dist;
     bullet.setVelocity(dx * inv * this.stats.bulletSpeed, dy * inv * this.stats.bulletSpeed);
+
+    this.spawnMuzzleFlash(mx, my, aim);
+  }
+
+  private spawnHitSpark(x: number, y: number): void {
+    for (let i = 0; i < 3; i++) {
+      const s = this.add.image(x, y, "tex_hit_spark");
+      s.setDepth(60);
+      s.setBlendMode(Phaser.BlendModes.ADD);
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 6 + Math.random() * 10;
+      this.tweens.add({
+        targets: s,
+        x: x + Math.cos(ang) * dist,
+        y: y + Math.sin(ang) * dist,
+        alpha: { from: 1, to: 0 },
+        scale: { from: 1, to: 0.4 },
+        duration: 180,
+        onComplete: () => s.destroy(),
+      });
+    }
+  }
+
+  private spawnDeathSmoke(x: number, y: number): void {
+    for (let i = 0; i < 3; i++) {
+      const s = this.add.image(x, y, "tex_smoke");
+      s.setDepth(40);
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 4 + Math.random() * 12;
+      this.tweens.add({
+        targets: s,
+        x: x + Math.cos(ang) * dist,
+        y: y + Math.sin(ang) * dist - 4,
+        alpha: { from: 0.7, to: 0 },
+        scale: { from: 0.7, to: 1.6 },
+        duration: 380,
+        onComplete: () => s.destroy(),
+      });
+    }
+  }
+
+  private spawnMuzzleFlash(x: number, y: number, angle: number): void {
+    const flash = this.add.image(x, y, "tex_muzzle_flash");
+    flash.setRotation(angle);
+    flash.setDepth(50);
+    flash.setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({
+      targets: flash,
+      alpha: { from: 1, to: 0 },
+      scaleX: { from: 1, to: 1.4 },
+      scaleY: { from: 1, to: 1.4 },
+      duration: 80,
+      onComplete: () => flash.destroy(),
+    });
   }
 
   private handleEnemyAI(): void {
@@ -321,8 +395,10 @@ export class GameScene extends Phaser.Scene {
     if (!bullet.active || !enemy.active) return;
     const dmg = (bullet.getData("damage") as number) ?? 1;
     enemy.hp = (enemy.hp ?? 0) - dmg;
+    this.spawnHitSpark(bullet.x, bullet.y);
     bullet.destroy();
     if ((enemy.hp ?? 0) <= 0) {
+      this.spawnDeathSmoke(enemy.x, enemy.y);
       if (enemy.isBoss === true) {
         this.onBossDefeated(enemy);
       } else {
@@ -442,10 +518,10 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(0, 0.5)
       .setScrollFactor(0)
       .setDepth(1000)
-      .setStrokeStyle(1, GAME_CONFIG.palette.xp, 0.5);
+      .setStrokeStyle(1, GAME_CONFIG.palette.gem, 0.5);
 
     this.xpBar = this.add
-      .rectangle(16, 60, 0, 6, GAME_CONFIG.palette.xp)
+      .rectangle(16, 60, 0, 6, GAME_CONFIG.palette.gem)
       .setOrigin(0, 0.5)
       .setScrollFactor(0)
       .setDepth(1001);
@@ -540,10 +616,17 @@ export class GameScene extends Phaser.Scene {
   private maybeSpawnBoss(): void {
     if (!shouldSpawnBoss(this.elapsedSec, this.bossSpawned)) return;
     const cam = this.cameras.main;
-    const angle = Math.random() * Math.PI * 2;
-    const dist = Math.max(cam.width, cam.height) * 0.55;
-    const x = this.player.x + Math.cos(angle) * dist;
-    const y = this.player.y + Math.sin(angle) * dist;
+    const halfW = cam.width / (cam.zoom || 1) / 2;
+    const halfH = cam.height / (cam.zoom || 1) / 2;
+    const spawn = pickSpawnPoint({
+      centerX: this.player.x,
+      centerY: this.player.y,
+      halfWidth: halfW,
+      halfHeight: halfH,
+      buffer: 120,
+    });
+    const x = spawn.x;
+    const y = spawn.y;
 
     const boss = this.enemies.create(x, y, BOSS_CONFIG.textureKey) as Enemy;
     boss.hp = BOSS_CONFIG.hp;
@@ -620,15 +703,19 @@ export class GameScene extends Phaser.Scene {
   }
 
   private drawGridBackdrop(w: number, h: number): void {
-    const g = this.add.graphics({ x: -w / 2, y: -h / 2 });
-    g.lineStyle(1, GAME_CONFIG.palette.grid, 0.6);
-    const step = 64;
-    for (let x = 0; x <= w; x += step) {
-      g.lineBetween(x, 0, x, h);
+    // Tile asphalt across the world
+    const tile = this.add.tileSprite(0, 0, w, h, "tex_asphalt");
+    tile.setOrigin(0.5, 0.5);
+    tile.setDepth(-100);
+    // Scatter rubble props for depth
+    const rubbleCount = 36;
+    for (let i = 0; i < rubbleCount; i++) {
+      const rx = Phaser.Math.Between(-w / 2, w / 2);
+      const ry = Phaser.Math.Between(-h / 2, h / 2);
+      const r = this.add.image(rx, ry, "tex_rubble");
+      r.setDepth(-99);
+      r.setRotation(Math.random() * Math.PI * 2);
+      r.setAlpha(0.85);
     }
-    for (let y = 0; y <= h; y += step) {
-      g.lineBetween(0, y, w, y);
-    }
-    g.setDepth(-100);
   }
 }

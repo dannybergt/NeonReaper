@@ -4,6 +4,8 @@ Chronologisch absteigend (jüngste oben). Vollformat-ADRs liegen unter `docs/adr
 
 | ID  | Datum       | Titel                                              | Status   |
 |-----|-------------|----------------------------------------------------|----------|
+| 008 | 2026-05-15  | 100% custom-rendered Sprites via Phaser Graphics | Accepted |
+| 007 | 2026-05-15  | Visual Pivot: Last-War-Polish-Look (supersedes ADR-001 Genre-Teil) | Accepted |
 | 006 | 2026-05-15  | Boss bei Minute 5 (Pressure-Spike-Event) | Accepted |
 | 005 | 2026-05-15  | Modifier-Stack via CurseSystem + Curse-Elites (Stärke-Senkung #2) | Accepted |
 | 004 | 2026-05-15  | Enemy-Variants (Walker, Runner, Brute) + gewichteter Picker | Accepted |

@@ -1,6 +1,6 @@
 # NeonReaper — Current State
 
-_Last updated: 2026-05-15 (Phase 2a + 2b + 2c + 2d — bis Boss)_
+_Last updated: 2026-05-15 (Phase 3a — Visual-Pivot + Spawn-Fix)_
 
 ## What's running
 
@@ -15,6 +15,22 @@ Browser-Manual-Run für Phase 1+2 steht weiterhin aus.
 | 8080 | nginx (Docker) | nicht aktiv — gestartet via `docker compose up` |
 
 Aktuell keine Ports allokiert. Vor jedem Start: Port-Check.
+
+## Was wurde gemacht (Session 2026-05-15 — Phase 3a: Visual-Pivot + Spawn-Fix)
+
+**Pivot:** ADR-001-Genre-Teil widerrufen durch ADR-007. Look-Vorbild ist jetzt **Last War: Survival** (Special Ops / Frontline Breakthrough Ad-Mode) — post-apokalyptisch, Soldat vs Zombies, gedämpfte Erdtöne + warme Akzente. Custom-rendered (ADR-008), keine externen Assets.
+
+- **ADR-007** (Visual Pivot) + **ADR-008** (100% Custom-Sprites) geschrieben.
+- **`src/render/SpriteFactory.ts`** — neuer zentraler Sprite-Generator. Eine `buildAllTextures(scene)`-Funktion liefert alle 13 Texturen (Player, 3 Zombie-Typen, Boss, Bullets, Muzzle-Flash, Gem, Hit-Spark, Smoke, Asphalt-Tile, Rubble).
+- **PreloadScene** ruft `buildAllTextures` statt inline-Generierung.
+- **GAME_CONFIG.palette** komplett ersetzt: Asphalt-Grau-Basis + Khaki-Player + Zombie-Brown-Töne + warmer Mündungs-/Bullet-Glow.
+- **Background**: tileSprite mit Asphalt + Straßenmarkierung-Pattern + 36 zufällig platzierte Schutt-Sprites statt Neon-Grid.
+- **Player-Direction**: Sprite rotiert zum nearest enemy (oder zur Bewegungsrichtung wenn keiner da). Schuss-Spawn-Punkt verschiebt sich zum Waffenlauf.
+- **Muzzle-Flash**: ADD-Blendmode-Sprite am Lauf bei jedem Schuss, 80ms Tween.
+- **Hit-Sparks**: 3 Particles spritzen bei jedem Bullet-Hit.
+- **Death-Smoke**: 3 Smoke-Puffs bei jedem Enemy-Tod.
+- **Spawn-Bug-Fix (`SpawnZone.ts`)**: Gegner spawnen jetzt auf einem **Rechteck-Rand knapp außerhalb des sichtbaren Camera-Bereichs**, gleichmäßig auf alle 4 Seiten verteilt. Pure function, 4 Vitest-Tests. Bisheriges Kreis-Spawn führte dazu dass Gegner gefühlt "alle von oben/vorn" kamen, weil Viewport 16:9 ist und Vertikal-Spawns weiter außerhalb des Sichtfeldes lagen.
+- **MenuScene** Branding: "REAPER" + warmer Orange-Button statt Pink.
 
 ## Was wurde gemacht (Session 2026-05-15 — Phase 2d: Boss bei Minute 5)
 

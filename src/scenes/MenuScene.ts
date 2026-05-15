@@ -10,31 +10,32 @@ export class MenuScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     this.add
-      .text(width / 2, height / 2 - 80, "NEONREAPER", {
+      .text(width / 2, height / 2 - 80, "REAPER", {
         fontFamily: "system-ui, sans-serif",
-        fontSize: "72px",
-        color: "#ff2bd6",
+        fontSize: "84px",
+        color: "#f0e8c8",
       })
       .setOrigin(0.5)
-      .setShadow(0, 0, "#ff2bd6", 18, true, true);
+      .setShadow(0, 4, "#000000", 8, true, true);
 
     this.add
-      .text(width / 2, height / 2 - 20, "Phase 0 — Scaffold", {
+      .text(width / 2, height / 2 - 16, "POST-APOCALYPTIC AUTO-SHOOTER", {
         fontFamily: "system-ui, sans-serif",
-        fontSize: "16px",
-        color: "#7f7fa0",
+        fontSize: "14px",
+        color: "#8a8a82",
+        fontStyle: "bold",
       })
       .setOrigin(0.5);
 
     const startText = this.add
-      .text(width / 2, height / 2 + 60, "▶ START", {
+      .text(width / 2, height / 2 + 70, "▶  ENTER THE STREETS", {
         fontFamily: "system-ui, sans-serif",
-        fontSize: "28px",
-        color: "#00ffe1",
+        fontSize: "26px",
+        color: "#ff8c2b",
       })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
-      .setShadow(0, 0, "#00ffe1", 12, true, true);
+      .setShadow(0, 2, "#000000", 6, true, true);
 
     startText.on("pointerover", () => startText.setScale(1.08));
     startText.on("pointerout", () => startText.setScale(1));

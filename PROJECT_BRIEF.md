@@ -1,8 +1,10 @@
 # NeonReaper — Project Brief
 
+> **2026-05-15 — Visual-Pivot.** Der ursprüngliche Neon-Noir-Stil aus ADR-001 wurde durch ADR-007 widerrufen. Setting ist jetzt post-apokalyptisch im Polish-Look der **Last War: Survival**-Mobile-Ads (Soldat vs Zombie-Horden, gedämpfte Erdtöne + warme Akzente). Projekt-Name bleibt vorerst "NeonReaper" als Codename bis ein neuer Brand-Name entschieden ist.
+
 ## Pitch in einem Satz
 
-NeonReaper ist ein 2.5D-isometrischer Auto-Shooter im Neon-Noir-Stil: Wellen von Gegnern, automatischer Beschuss, kombinierbare Waffenkategorien, sichtbar werdende Stärke- und Schwächephasen — also genau das, was Google-Play-Ads versprechen und nie liefern.
+NeonReaper ist ein top-down Survivor-Auto-Shooter im Polish-Look der Last-War-Werbevideos: Soldat gegen Zombie-Horden, kombinierbare Waffen, sichtbar werdende Stärke- und Schwächephasen — also genau das, was Google-Play-Ads versprechen und nie liefern.
 
 ## Ziel
 
