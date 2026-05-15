@@ -47,8 +47,35 @@ export class PreloadScene extends Phaser.Scene {
     g.generateTexture("tex_enemy_walker", 28, 28);
     g.clear();
 
+    // Runner — slim, orange, fast (triangle silhouette)
+    g.fillStyle(0xff7a2b, 1).fillTriangle(11, 2, 20, 18, 2, 18);
+    g.lineStyle(2, 0xffc080, 0.8).strokeTriangle(11, 2, 20, 18, 2, 18);
+    g.generateTexture("tex_enemy_runner", 22, 22);
+    g.clear();
+
+    // Brute — chunky, deep purple, armored (hex-ish square)
+    g.fillStyle(0x6a1bff, 1).fillCircle(20, 20, 18);
+    g.lineStyle(3, 0xc080ff, 0.85).strokeCircle(20, 20, 18);
+    g.fillStyle(0xc080ff, 0.6).fillCircle(20, 20, 8);
+    g.generateTexture("tex_enemy_brute", 40, 40);
+    g.clear();
+
     g.fillStyle(p.bullet, 1).fillCircle(4, 4, 3);
     g.generateTexture("tex_bullet", 8, 8);
+    g.clear();
+
+    // Enemy bullet — angry magenta
+    g.fillStyle(0xff2bd6, 1).fillCircle(5, 5, 4);
+    g.lineStyle(1, 0xff80f0, 0.9).strokeCircle(5, 5, 4);
+    g.generateTexture("tex_enemy_bullet", 10, 10);
+    g.clear();
+
+    // Boss — large purple-magenta orb with bright core
+    g.fillStyle(0x4a0080, 1).fillCircle(40, 40, 38);
+    g.lineStyle(4, 0xff2bd6, 0.9).strokeCircle(40, 40, 38);
+    g.fillStyle(0xff80f0, 0.55).fillCircle(40, 40, 22);
+    g.fillStyle(0xffd0ff, 0.9).fillCircle(40, 40, 10);
+    g.generateTexture("tex_boss", 80, 80);
     g.clear();
 
     g.fillStyle(p.xp, 1).fillRect(0, 0, 8, 8);

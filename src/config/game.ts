@@ -26,15 +26,15 @@ export const GAME_CONFIG = {
     pistolRange: 380,
     bulletSpeed: 620,
   },
-  enemy: {
-    walkerSpeed: 70,
-    walkerHp: 24,
-    walkerDamage: 8,
-  },
   spawner: {
     initialIntervalMs: 1500,
     minIntervalMs: 250,
     rampDownPerSec: 6,
+  },
+  xp: {
+    gemMagnetSpeed: 460,
+    gemPickupRadius: 18,
+    gemDespawnMs: 30_000,
   },
 } as const;
 
