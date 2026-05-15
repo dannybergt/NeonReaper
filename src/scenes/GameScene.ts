@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { GAME_CONFIG } from "@/config/game";
 import {
+  addWeapon,
   applyTroopDelta,
   createSquad,
   damagePerVolley,
@@ -16,6 +17,8 @@ import {
 import { resolveCombatTick } from "@/systems/Combat";
 import { applyGate, gateVisual, type GateRuntime, type GateSpec } from "@/systems/Gates";
 import { buildWave1, type Wave } from "@/systems/Waves";
+import { planShot, tryFire, WEAPON_SPECS, type WeaponId } from "@/systems/Weapons";
+import { createWeaponCrate, damageCrate, type WeaponCrateRuntime, type WeaponCrateSpec } from "@/systems/WeaponCrate";
 
 type Bullet = Phaser.Physics.Arcade.Sprite & { dmg?: number };
 type EnemyBullet = Phaser.Physics.Arcade.Sprite;
@@ -38,6 +41,14 @@ interface BossHandle {
   hp: number;
   maxHp: number;
   fireTimerMs: number;
+}
+
+interface CrateVisual {
+  runtime: WeaponCrateRuntime;
+  container: Phaser.GameObjects.Container;
+  hpBar: Phaser.GameObjects.Rectangle;
+  hpBarBg: Phaser.GameObjects.Rectangle;
+  label: Phaser.GameObjects.Text;
 }
 
 export class GameScene extends Phaser.Scene {
@@ -64,11 +75,11 @@ export class GameScene extends Phaser.Scene {
 
   private enemies: EnemyVisual[] = [];
   private gates: GateVisualHandle[] = [];
+  private crates: CrateVisual[] = [];
   private boss: BossHandle | null = null;
   private bossActive = false;
 
   private elapsedMs = 0;
-  private nextFireAt = 0;
   private nextCombatTickAt = 0;
   private dead = false;
   private waveCleared = false;
@@ -77,6 +88,7 @@ export class GameScene extends Phaser.Scene {
   private hudDamage!: Phaser.GameObjects.Text;
   private hudWave!: Phaser.GameObjects.Text;
   private hudCenter!: Phaser.GameObjects.Text;
+  private hudWeapons!: Phaser.GameObjects.Text;
   private bossHpBg!: Phaser.GameObjects.Rectangle;
   private bossHpBar!: Phaser.GameObjects.Rectangle;
   private bossLabel!: Phaser.GameObjects.Text;
@@ -92,7 +104,6 @@ export class GameScene extends Phaser.Scene {
     this.dead = false;
     this.waveCleared = false;
     this.elapsedMs = 0;
-    this.nextFireAt = 0;
     this.nextCombatTickAt = 0;
     this.scrolledPx = 0;
     this.scrollSpeed = GAME_CONFIG.lane.scrollSpeed;
@@ -100,6 +111,7 @@ export class GameScene extends Phaser.Scene {
     this.bossActive = false;
     this.enemies = [];
     this.gates = [];
+    this.crates = [];
 
     this.squad = createSquad(
       GAME_CONFIG.squad.startTroops,
@@ -136,6 +148,9 @@ export class GameScene extends Phaser.Scene {
     this.targetX = anchorX;
     this.troopSprites = [];
     this.rebuildTroopSprites();
+
+    // Vignette on top of everything below HUD
+    this.add.image(width / 2, height / 2, "tex_vignette").setDepth(900).setAlpha(0.85);
 
     // Physics groups
     this.bullets = this.physics.add.group({ runChildUpdate: false });
@@ -194,6 +209,17 @@ export class GameScene extends Phaser.Scene {
       const sprite = this.add.image(0, 0, "tex_soldier");
       this.squadAnchor.add(sprite);
       this.troopSprites.push(sprite);
+      // Per-troop walking wiggle — different phase per sprite for organic feel
+      const phase = Math.random() * 1000;
+      this.tweens.add({
+        targets: sprite,
+        scaleY: { from: 1, to: 0.94 },
+        duration: 280,
+        yoyo: true,
+        repeat: -1,
+        delay: phase,
+        ease: "Sine.easeInOut",
+      });
     }
     while (this.troopSprites.length > visualN) {
       const s = this.troopSprites.pop();
@@ -259,15 +285,39 @@ export class GameScene extends Phaser.Scene {
         this.spawnGatePair(ev.gates, spawnY);
       } else if (ev.kind === "enemyGroup" && ev.enemy) {
         this.spawnEnemyGroup(ev.enemy.tier, ev.enemy.troops, ev.enemy.laneX, spawnY);
+      } else if (ev.kind === "weaponCrate" && ev.crate) {
+        this.spawnWeaponCrate(ev.crate, spawnY);
       } else if (ev.kind === "boss" && ev.bossHp) {
         this.spawnBoss(ev.bossHp);
       }
       this.waveCursor++;
     }
-    if (this.waveCursor >= this.wave.events.length && !this.bossActive && this.enemies.length === 0) {
+    if (this.waveCursor >= this.wave.events.length && !this.bossActive && this.enemies.length === 0 && this.crates.length === 0) {
       this.waveCleared = true;
     }
     void height;
+  }
+
+  private spawnWeaponCrate(spec: WeaponCrateSpec, worldY: number): void {
+    const runtime = createWeaponCrate(spec, worldY);
+    const { width } = this.scale;
+    const cx = width / 2 + spec.laneX;
+    const container = this.add.container(cx, worldY);
+    const frame = this.add.image(0, 0, "tex_weapon_crate");
+    const label = this.add
+      .text(0, 0, WEAPON_SPECS[spec.drop].label, {
+        fontFamily: "system-ui, sans-serif",
+        fontSize: "16px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setShadow(0, 2, "#000000", 4, true, true);
+    const hpBarBg = this.add.rectangle(0, 40, 80, 6, 0x14142a).setOrigin(0.5, 0.5);
+    const hpBar = this.add.rectangle(-40, 40, 80, 6, 0xff8c2b).setOrigin(0, 0.5);
+    container.add([frame, label, hpBarBg, hpBar]);
+    container.setDepth(7);
+    this.crates.push({ runtime, container, hpBar, hpBarBg, label });
   }
 
   private spawnEnemyGroup(tier: EnemyTier, troops: number, laneX: number, worldY: number): void {
@@ -275,10 +325,10 @@ export class GameScene extends Phaser.Scene {
     const stats = ENEMY_TIER_STATS[tier];
     const cx = this.scale.width / 2 + laneX;
     const troopSprites: Phaser.GameObjects.Image[] = [];
-    const visualN = Math.min(troops, 30);
-    const cols = Math.min(5, Math.ceil(Math.sqrt(visualN)));
+    const visualN = Math.min(troops, 24);
+    const cols = Math.min(5, Math.max(2, Math.ceil(Math.sqrt(visualN))));
     const rows = Math.ceil(visualN / cols);
-    const gap = 22;
+    const gap = tier === "heavy" ? 44 : 36;
     for (let i = 0; i < visualN; i++) {
       const r = Math.floor(i / cols);
       const c = i % cols;
@@ -287,17 +337,27 @@ export class GameScene extends Phaser.Scene {
       const s = this.add.image(x, y, stats.spriteKey);
       s.setDepth(10);
       troopSprites.push(s);
+      const phase = Math.random() * 800;
+      this.tweens.add({
+        targets: s,
+        scaleY: { from: 1, to: 0.92 },
+        duration: 360,
+        yoyo: true,
+        repeat: -1,
+        delay: phase,
+        ease: "Sine.easeInOut",
+      });
     }
     const countLabel = this.add
-      .text(cx, worldY - rows * gap / 2 - 18, `${troops}`, {
+      .text(cx, worldY - rows * gap / 2 - 22, `${troops}`, {
         fontFamily: "system-ui, sans-serif",
-        fontSize: "22px",
+        fontSize: "26px",
         color: "#f0e8c8",
         fontStyle: "bold",
       })
       .setOrigin(0.5)
       .setDepth(11)
-      .setShadow(0, 2, "#000000", 4, true, true);
+      .setShadow(0, 2, "#000000", 5, true, true);
     this.enemies.push({ group, troopSprites, countLabel });
   }
 
@@ -389,31 +449,48 @@ export class GameScene extends Phaser.Scene {
       g.zone.y += dy;
       g.body.position.y += dy;
     }
-  }
-
-  private handleAutoFire(): void {
-    if (this.elapsedMs < this.nextFireAt) return;
-    if (this.squad.troops <= 0) return;
-    this.nextFireAt = this.elapsedMs + this.squad.fireRateMs;
-    // Spawn one bullet per visible troop sprite, capped, for the visual feel
-    const sprites = this.troopSprites;
-    const cap = Math.min(sprites.length, 12);
-    for (let i = 0; i < cap; i++) {
-      const s = sprites[i]!;
-      const wx = this.squadAnchor.x + s.x;
-      const wy = this.squadAnchor.y + s.y - 6;
-      const b = this.bullets.create(wx, wy, "tex_bullet") as Bullet;
-      b.dmg = GAME_CONFIG.squad.bulletDamage * this.squad.damageTier;
-      b.setData("spawnedAt", this.elapsedMs);
-      b.setVelocity(0, -GAME_CONFIG.squad.bulletSpeed);
-      this.muzzleFlashAt(wx, wy - 6);
+    for (const c of this.crates) {
+      c.runtime.worldY += dy;
+      c.container.y += dy;
     }
   }
 
-  private muzzleFlashAt(x: number, y: number): void {
+  private handleAutoFire(): void {
+    if (this.squad.troops <= 0) return;
+    const sprites = this.troopSprites;
+    if (sprites.length === 0) return;
+    const cap = Math.min(sprites.length, 14);
+
+    // Each weapon fires on its own cooldown. Soldiers are split across weapons
+    // round-robin so multiple weapon types contribute to the visible salvo.
+    for (let wi = 0; wi < this.squad.weapons.length; wi++) {
+      const weapon = this.squad.weapons[wi]!;
+      if (!tryFire(weapon, this.elapsedMs)) continue;
+      const plans = planShot(weapon.spec);
+      const tier = this.squad.damageTier;
+      for (let i = 0; i < cap; i++) {
+        if (i % this.squad.weapons.length !== wi) continue;
+        const sprite = sprites[i]!;
+        const wx = this.squadAnchor.x + sprite.x;
+        const wy = this.squadAnchor.y + sprite.y - 6;
+        for (const plan of plans) {
+          const b = this.bullets.create(wx, wy, "tex_bullet") as Bullet;
+          b.dmg = plan.damage * tier;
+          b.setData("spawnedAt", this.elapsedMs);
+          b.setTint(plan.tint);
+          b.setRotation(plan.angle + Math.PI / 2);
+          b.setVelocity(Math.cos(plan.angle) * plan.speed, Math.sin(plan.angle) * plan.speed);
+        }
+        this.muzzleFlashAt(wx, wy - 6, weapon.spec.tint);
+      }
+    }
+  }
+
+  private muzzleFlashAt(x: number, y: number, tint?: number): void {
     const f = this.add.image(x, y, "tex_muzzle_flash");
     f.setDepth(50);
     f.setBlendMode(Phaser.BlendModes.ADD);
+    if (tint !== undefined) f.setTint(tint);
     this.tweens.add({
       targets: f,
       alpha: { from: 1, to: 0 },
@@ -426,15 +503,39 @@ export class GameScene extends Phaser.Scene {
   // ── Combat & collisions ─────────────────────────────────────────────
 
   private handleEnemyCombat(): void {
-    // Hit-test bullets vs enemy groups (no Phaser overlap, manual AABB so we can scale combat properly)
+    // Hit-test bullets vs enemy groups / crates / boss.
+    // Enemies and crates are only hittable once they're at least at the top edge
+    // of the viewport, so they don't get killed off-screen.
+    const VIS_Y_MIN = -20;
     for (const bullet of this.bullets.getChildren() as Bullet[]) {
       if (!bullet.active) continue;
+
+      // Bullets vs weapon crates (priority — physical block in lane)
+      let consumed = false;
+      for (const c of this.crates) {
+        if (c.runtime.consumed) continue;
+        if (c.runtime.worldY < VIS_Y_MIN) continue;
+        const dx = bullet.x - c.container.x;
+        const dy = bullet.y - c.runtime.worldY;
+        if (Math.abs(dx) < 56 && Math.abs(dy) < 36) {
+          const opened = damageCrate(c.runtime, bullet.dmg ?? 1);
+          this.hitSparkAt(bullet.x, bullet.y);
+          bullet.destroy();
+          consumed = true;
+          if (opened) this.openCrate(c);
+          break;
+        }
+      }
+      if (consumed) continue;
+
+      // Bullets vs enemy groups
       for (const e of this.enemies) {
         if (!e.group.alive) continue;
+        if (e.group.worldY < VIS_Y_MIN) continue;
         const cx = this.scale.width / 2 + e.group.spec.laneX;
         const dx = bullet.x - cx;
         const dy = bullet.y - e.group.worldY;
-        if (Math.abs(dx) < 60 && Math.abs(dy) < 60) {
+        if (Math.abs(dx) < 72 && Math.abs(dy) < 72) {
           const dmg = bullet.dmg ?? 1;
           e.group.troops -= dmg;
           this.hitSparkAt(bullet.x, bullet.y);
@@ -443,11 +544,14 @@ export class GameScene extends Phaser.Scene {
             e.group.alive = false;
             this.deathSmokeAt(cx, e.group.worldY);
           }
+          consumed = true;
           break;
         }
       }
+      if (consumed) continue;
+
       // Bullets vs boss
-      if (bullet.active && this.boss && this.bossActive) {
+      if (this.boss && this.bossActive) {
         const bs = this.boss.sprite;
         if (Math.abs(bullet.x - bs.x) < bs.displayWidth / 2 && Math.abs(bullet.y - bs.y) < bs.displayHeight / 2) {
           this.boss.hp -= (bullet.dmg ?? 1);
@@ -562,6 +666,35 @@ export class GameScene extends Phaser.Scene {
     this.waveCleared = true;
   }
 
+  private openCrate(c: CrateVisual): void {
+    const dropId: WeaponId = c.runtime.spec.drop;
+    const added = addWeapon(this.squad, dropId, this.elapsedMs);
+    const cx = c.container.x;
+    const cy = c.container.y;
+    this.deathSmokeAt(cx, cy);
+    this.cameras.main.flash(220, 255, 180, 80);
+    const label = added ? `+ ${WEAPON_SPECS[dropId].label}` : `${WEAPON_SPECS[dropId].label} (already equipped)`;
+    const popup = this.add
+      .text(cx, cy, label, {
+        fontFamily: "system-ui, sans-serif",
+        fontSize: "20px",
+        color: added ? "#ffd870" : "#a8a89a",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(900)
+      .setShadow(0, 2, "#000000", 4, true, true);
+    this.tweens.add({
+      targets: popup,
+      y: cy - 60,
+      alpha: { from: 1, to: 0 },
+      duration: 900,
+      onComplete: () => popup.destroy(),
+    });
+    c.container.destroy();
+    this.updateHudText();
+  }
+
   private hitSparkAt(x: number, y: number): void {
     for (let i = 0; i < 2; i++) {
       const s = this.add.image(x, y, "tex_hit_spark");
@@ -634,6 +767,16 @@ export class GameScene extends Phaser.Scene {
       }
       return true;
     });
+    this.crates = this.crates.filter((c) => {
+      if (c.runtime.consumed || c.runtime.worldY > offscreen) {
+        if (!c.runtime.consumed) c.container.destroy();
+        return false;
+      }
+      // Update HP bar visual
+      const ratio = Math.max(0, c.runtime.hp / Math.max(1, c.runtime.maxHp));
+      c.hpBar.width = 80 * ratio;
+      return true;
+    });
   }
 
   // ── HUD ─────────────────────────────────────────────────────────────
@@ -670,6 +813,18 @@ export class GameScene extends Phaser.Scene {
       .setOrigin(1, 0)
       .setScrollFactor(0)
       .setDepth(1000);
+
+    this.hudWeapons = this.add
+      .text(this.scale.width - 20, 44, "", {
+        fontFamily: "system-ui, monospace",
+        fontSize: "14px",
+        color: "#ffd870",
+        align: "right",
+      })
+      .setOrigin(1, 0)
+      .setScrollFactor(0)
+      .setDepth(1000)
+      .setShadow(0, 2, "#000000", 3, true, true);
 
     this.hudCenter = this.add
       .text(this.scale.width / 2, 60, "", {
@@ -713,6 +868,8 @@ export class GameScene extends Phaser.Scene {
     this.hudSquad.setText(`[${Math.max(0, Math.ceil(this.squad.troops))}]`);
     this.hudDamage.setText(`× ${this.squad.damageTier} DMG`);
     this.hudWave.setText(`WAVE ${this.wave.id}    ESC = menu`);
+    const weaponList = this.squad.weapons.map((w) => w.spec.shortLabel).join(" · ");
+    this.hudWeapons.setText(`◆ ${weaponList}`);
   }
 
   // ── End states ──────────────────────────────────────────────────────

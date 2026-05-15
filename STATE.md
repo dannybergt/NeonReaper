@@ -1,10 +1,10 @@
 # NeonReaper — Current State
 
-_Last updated: 2026-05-15 (Genre-Pivot: Lane-Squad-Defense)_
+_Last updated: 2026-05-15 (Lane Phase 3b — Weapon-Crates + Enemy-Fix + Grafik-Aufwertung)_
 
 ## What's running
 
-Nichts läuft als Service. Lokal **typecheck ✅**, **vitest 26/26 ✅**, **build ✅** (App-Bundle 25.88 kB).
+Nichts läuft als Service. Lokal **typecheck ✅**, **vitest 37/37 ✅**, **build ✅**.
 Phase 1+2-Survivor-Code wurde komplett entfernt — Branches `feature/phase-1-2-progression-pressure` (`8a41899`) und `feature/phase-3-visual-pivot` (`6380f2c`) bleiben als Archiv im Repo.
 
 ## Allocated Ports
@@ -13,6 +13,45 @@ Phase 1+2-Survivor-Code wurde komplett entfernt — Branches `feature/phase-1-2-
 |------|----------------|----------------------------------------|
 | 5173 | Vite Dev       | Standard — Vite wechselt automatisch wenn belegt (5174/5175/…) |
 | 8080 | nginx (Docker) | nicht aktiv |
+
+## Was wurde gemacht (Session 2026-05-15 — Phase 3b: Weapon-Crates + Sichtbarkeits-Fix + Grafik)
+
+**Owner-Feedback** zu Phase-3a-Build:
+> "bis auf den 'endboss' kommen keine gegner, nur '+' oder '-'. besser wäre auch etwas zu beschießen, was runterzählt und demnach eine neue waffengattung freischaltet"
+> "die geschwindigkeit ist gut"
+> "aber die grafik muss viel viel besser werden"
+
+Behoben in diesem Slice:
+
+- **Bug-Fix Enemy-Visibility**: Bullets killten Enemies bei worldY < -20 unsichtbar (Squad-Bullets erreichen y=-40, Enemies spawnen y=-120 → 22-Truppen-Group wurde in einer Burst-Salve gelöscht bevor sichtbar). Jetzt Visibility-Gate `worldY >= -20` für Bullet-Hits auf Enemies und Crates.
+- **Enemy-Rebalance**: Truppen-Anzahl pro Group ×3 (Grunt 22, Heavy 24, Shocktrooper 14-20). Bounding-Box-Treffer 72×72 statt 60×60.
+- **WeaponSystem** (`src/systems/Weapons.ts`):
+  - 4 Waffen-Specs: Rifle (default, single shot), Shotgun (5-Spread fan ~52°), Machinegun (high fire-rate), Rocket (slow but heavy dmg)
+  - `planShot()` liefert Bullet-Pläne mit Winkel/Geschwindigkeit/Damage/Tint
+  - `tryFire()` Cooldown-Check
+  - 6 Vitest-Tests
+- **WeaponCrate** (`src/systems/WeaponCrate.ts`):
+  - Crate-Entity mit HP, `damageCrate()` returnt true bei Crate-Tod
+  - Bei Tod: Squad bekommt `addWeapon()` (kein Duplikat)
+  - Wave-Event-Kind `weaponCrate`
+  - 5 Vitest-Tests
+- **Wave 1 angereichert**: 1 Shotgun-Crate bei dist 1450, 1 Machinegun-Crate bei dist 3300, mehr Enemy-Druck (Grunt 22, Doppel-Welle Grunt+Shock, Heavy, Final-Wave Doppel-Shock+Heavy), Boss-HP von 220→320.
+- **Squad-Weapons-Liste**: Auto-Fire iteriert über alle aktiven Waffen mit individuellem Cooldown. Soldaten werden round-robin auf Waffen verteilt. Bullets bekommen Waffen-Tint.
+- **HUD um Weapon-Liste erweitert** (oben rechts, "◆ RIF · SHT").
+
+**Grafik-Aufwertung** (Owner-Feedback "viel viel besser"):
+
+- **Squad-Soldat**: 36×44 (vorher 20×24) mit Helm-Brim, Visor-Strip, Kommunikations-Antenne, Rucksack-Hump, Schulter-Pads, Tactical-Harness mit X-Strap + Mag-Pouches, Stiefel, Beine, Gewehr mit Stock + Receiver + Barrel + Optic + Muzzle.
+- **Grunt-Zombie**: 32×42 mit Schatten-Layer, sichtbaren Rippen, blutiger Wunde, hängenden Armen mit Fingern, hohlen Augen mit rotem Glühen, Mund mit Zähnen, Blut-Drool.
+- **Shocktrooper**: 36×46 mit Eisen-Maske, Mouth-Grill-Bolts, Schulter-Spikes-Double-Layer.
+- **Heavy**: 52×58 mit Crest-Helm, Plate-Emblem, Pauldron-Spikes, Knuckle-Plates.
+- **Boss "Reaper Lord"**: 280×200 mit Crown-of-Spikes (16 Stück, variable Höhe), 14 Tendrils (zwei-farbig), Side-Claws/Fangs, mehrlagigem Core-Glow mit Pupille.
+- **Asphalt-Tile**: Tar-Splotches + Cracks + dezente Edge-Dashes + dunkler Schatten unter Lane-Markings.
+- **Lane-Edge**: Gradient-Beton + Texturpunkte + dreilagige Rivets.
+- **Gate-Frame**: Warning-Stripes auf Crossbar, Shadow-Layer, Pylon-Highlights.
+- **Bullet**: 10×20 (vorher 8×14) mit Trail-Glow + Body-Highlight.
+- **Vignette-Overlay** im GameScene (8 konzentrische Ellipsen + dunkler Rand).
+- **Walking-Wiggle**: Squad- und Enemy-Sprites pulsieren scale.Y subtle (Sine-Wave, individueller Phasenversatz pro Sprite).
 
 ## Was wurde gemacht (Session 2026-05-15 — Genre-Pivot Lane-Defense)
 

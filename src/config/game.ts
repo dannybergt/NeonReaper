@@ -57,15 +57,15 @@ export const GAME_CONFIG = {
   },
   squad: {
     startTroops: 8,
-    minTroopGapPx: 22,
+    minTroopGapPx: 34,
     fireRateMs: 320,
     bulletSpeed: 760,
     bulletDamage: 1,
     startDamageTier: 1,
     troopMoveLerp: 0.18,
     yOffsetFromBottom: 220,
-    formationMaxCols: 6,
-    visualTroopCap: 60,
+    formationMaxCols: 5,
+    visualTroopCap: 40,
     targetXLerp: 0.22,
   },
   enemy: {
