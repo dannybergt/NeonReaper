@@ -10,7 +10,6 @@ import {
 } from "@/systems/Squad";
 import {
   createEnemyGroup,
-  ENEMY_TIER_STATS,
   type EnemyGroupRuntime,
   type EnemyTier,
 } from "@/systems/EnemyGroup";
@@ -25,7 +24,7 @@ type EnemyBullet = Phaser.Physics.Arcade.Sprite;
 
 interface EnemyVisual {
   group: EnemyGroupRuntime;
-  troopSprites: Phaser.GameObjects.Image[];
+  troopSprites: Phaser.GameObjects.Sprite[];
   countLabel: Phaser.GameObjects.Text;
 }
 
@@ -54,7 +53,7 @@ interface CrateVisual {
 export class GameScene extends Phaser.Scene {
   private squad!: SquadState;
   private squadAnchor!: Phaser.GameObjects.Container;
-  private troopSprites: Phaser.GameObjects.Image[] = [];
+  private troopSprites: Phaser.GameObjects.Sprite[] = [];
 
   private laneTile!: Phaser.GameObjects.TileSprite;
   private leftEdge!: Phaser.GameObjects.TileSprite;
@@ -206,20 +205,11 @@ export class GameScene extends Phaser.Scene {
   private rebuildTroopSprites(): void {
     const visualN = Math.min(this.squad.troops, GAME_CONFIG.squad.visualTroopCap);
     while (this.troopSprites.length < visualN) {
-      const sprite = this.add.image(0, 0, "tex_soldier");
+      const sprite = this.add.sprite(0, 0, "sprites", "player_00");
+      sprite.setScale(0.7);
+      sprite.play({ key: "walk_player", startFrame: Math.floor(Math.random() * 4) });
       this.squadAnchor.add(sprite);
       this.troopSprites.push(sprite);
-      // Per-troop walking wiggle — different phase per sprite for organic feel
-      const phase = Math.random() * 1000;
-      this.tweens.add({
-        targets: sprite,
-        scaleY: { from: 1, to: 0.94 },
-        duration: 280,
-        yoyo: true,
-        repeat: -1,
-        delay: phase,
-        ease: "Sine.easeInOut",
-      });
     }
     while (this.troopSprites.length > visualN) {
       const s = this.troopSprites.pop();
@@ -322,31 +312,25 @@ export class GameScene extends Phaser.Scene {
 
   private spawnEnemyGroup(tier: EnemyTier, troops: number, laneX: number, worldY: number): void {
     const group = createEnemyGroup({ tier, troops, laneX }, worldY);
-    const stats = ENEMY_TIER_STATS[tier];
     const cx = this.scale.width / 2 + laneX;
-    const troopSprites: Phaser.GameObjects.Image[] = [];
+    const troopSprites: Phaser.GameObjects.Sprite[] = [];
     const visualN = Math.min(troops, 24);
     const cols = Math.min(5, Math.max(2, Math.ceil(Math.sqrt(visualN))));
     const rows = Math.ceil(visualN / cols);
-    const gap = tier === "heavy" ? 44 : 36;
+    const gap = tier === "heavy" ? 50 : 40;
+    const animKey = `walk_${tier === "shocktrooper" ? "shock" : tier}`;
+    const firstFrame = `${tier === "shocktrooper" ? "shock" : tier}_00`;
+    const scale = tier === "heavy" ? 0.95 : tier === "shocktrooper" ? 0.78 : 0.72;
     for (let i = 0; i < visualN; i++) {
       const r = Math.floor(i / cols);
       const c = i % cols;
       const x = cx + (c - (cols - 1) / 2) * gap;
       const y = worldY + (r - (rows - 1) / 2) * gap;
-      const s = this.add.image(x, y, stats.spriteKey);
+      const s = this.add.sprite(x, y, "sprites", firstFrame);
+      s.setScale(scale);
       s.setDepth(10);
+      s.play({ key: animKey, startFrame: Math.floor(Math.random() * 4) });
       troopSprites.push(s);
-      const phase = Math.random() * 800;
-      this.tweens.add({
-        targets: s,
-        scaleY: { from: 1, to: 0.92 },
-        duration: 360,
-        yoyo: true,
-        repeat: -1,
-        delay: phase,
-        ease: "Sine.easeInOut",
-      });
     }
     const countLabel = this.add
       .text(cx, worldY - rows * gap / 2 - 22, `${troops}`, {

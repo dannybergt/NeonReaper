@@ -1,6 +1,6 @@
 # NeonReaper — Current State
 
-_Last updated: 2026-05-15 (Lane Phase 3b — Weapon-Crates + Enemy-Fix + Grafik-Aufwertung)_
+_Last updated: 2026-05-16 (Lane Phase 3c — 3D-Render-Pipeline für Charaktere)_
 
 ## What's running
 
@@ -13,6 +13,33 @@ Phase 1+2-Survivor-Code wurde komplett entfernt — Branches `feature/phase-1-2-
 |------|----------------|----------------------------------------|
 | 5173 | Vite Dev       | Standard — Vite wechselt automatisch wenn belegt (5174/5175/…) |
 | 8080 | nginx (Docker) | nicht aktiv |
+
+## Was wurde gemacht (Session 2026-05-16 — Phase 3c: 3D-Render-Pipeline)
+
+**Owner-Feedback:** "die grafik ist noch immer so mies" — nach Phase-3b (Phaser-Graphics-Uplift). Bei 4 Optionen wurde **Option 2 (3D-Render → PNG-Atlas)** gewählt.
+
+- **Blender 5.1.1** via winget installiert (system-weite Mutation, AGENTS §3, vom Owner zuvor genehmigt für ähnliche Tool-Installs).
+- **Kenney "Animated Characters 3"** CC0-Pack (706 KB) heruntergeladen via Archive.org-Mirror, ausgepackt nach `assets/source/`. Enthält: characterMedium.fbx, 4 Skins (humanMaleA/FemaleA, zombieMaleA/FemaleA), 3 Animationen (idle/run/jump).
+- **`scripts/render_sprite.py`** — Blender-Headless-Python-Skript:
+  - Lädt Char-FBX, optional Anim-FBX
+  - Sucht im imported Anim-Pool nach "run"/"walk"/"idle" Action
+  - Wendet Action auf Char-Armature an (Slotted Actions in Blender 5.1)
+  - Auto-Frame ortho-Kamera (60° Tilt + Track-To-Constraint)
+  - 3-Sun-Lighting (Key/Fill/Rim)
+  - Workbench-Engine (zuverlässiger als EEVEE_NEXT im --background)
+  - Pro Aufruf 1 Skin × N Frames
+- **`scripts/pack_atlas.py`** — Pillow-Skript für Atlas-Pack:
+  - Tight-crop per Frame via getbbox
+  - Greedy-Pack in Power-of-2-Atlas (256/512/1024/…)
+  - Phaser JSON-Hash-Format
+- **16 Frames gerendert**: 4 Charaktere × 4 Walk-Frames (Frames 3/7/11/15 aus 17-Frame Run-Animation).
+- **Atlas**: 512×512 px, `public/atlas/sprites.png` + `sprites.json`, 14 KB PNG.
+- **PreloadScene** lädt Atlas, registriert 4 Animationen: `walk_player/grunt/shock/heavy` mit 10 FPS Loop.
+- **GameScene** ersetzt Phaser-Graphics-Char-Sprites durch `add.sprite("sprites", "<char>_00").play("walk_<char>")`. Pro Sprite zufälliger Start-Frame für organische Formation.
+- **SpriteFactory** bereinigt: Char-Build-Funktionen bleiben als Fallback-Referenz erhalten (void-Statements), aber werden nicht mehr aufgerufen. FX/Umgebung/Boss bleiben Phaser-Graphics.
+- **ADR-010** geschrieben.
+- **README** umgeschrieben mit 3D-Pipeline-Doku.
+- **.gitignore** ergänzt um `assets/atlas/raw/` (Zwischen-PNGs).
 
 ## Was wurde gemacht (Session 2026-05-15 — Phase 3b: Weapon-Crates + Sichtbarkeits-Fix + Grafik)
 

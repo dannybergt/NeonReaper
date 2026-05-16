@@ -609,13 +609,10 @@ export function buildAllTextures(scene: Phaser.Scene): void {
   const g = scene.make.graphics({ x: 0, y: 0 }, false);
   const p = GAME_CONFIG.palette;
 
+  // Environment + FX still procedural (cheap, no asset bloat).
   buildLaneTile(g, p);
   buildLaneEdge(g, p);
-  buildPlayerSoldier(g, p);
-  buildEnemySoldier(g, p);
-  buildEnemyShock(g, p);
-  buildEnemyHeavy(g, p);
-  buildBoss(g, p);
+  buildBoss(g, p);           // Boss is still procedural — 280×144 mutant
   buildBullet(g, p);
   buildEnemyBullet(g, p);
   buildMuzzleFlash(g, p);
@@ -624,6 +621,15 @@ export function buildAllTextures(scene: Phaser.Scene): void {
   buildGateFrame(g);
   buildWeaponCrate(g);
   buildVignette(g);
+
+  // Characters (player/grunt/shock/heavy) come from the 3D-rendered atlas
+  // loaded by PreloadScene via this.load.atlas("sprites", ...).
+  // We still keep the procedural builders below as a fallback / reference,
+  // but they are no longer invoked.
+  void buildPlayerSoldier;
+  void buildEnemySoldier;
+  void buildEnemyShock;
+  void buildEnemyHeavy;
 
   g.destroy();
 }

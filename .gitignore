@@ -24,3 +24,10 @@ coverage/
 
 # build outputs
 *.tsbuildinfo
+
+# 3D-render intermediate output — atlas under public/atlas/ is committed,
+# but the per-frame raw PNGs are not.
+assets/atlas/raw/
+# Source ZIP archives — extracted content under assets/source/<name>/ is
+# committed, but the redundant zip is not.
+assets/source/*.zip

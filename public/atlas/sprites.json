@@ -1,0 +1,335 @@
+{
+  "frames": {
+    "grunt_03": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 105,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 105,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 105,
+        "h": 86
+      }
+    },
+    "heavy_03": {
+      "frame": {
+        "x": 105,
+        "y": 0,
+        "w": 105,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 105,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 105,
+        "h": 86
+      }
+    },
+    "player_03": {
+      "frame": {
+        "x": 210,
+        "y": 0,
+        "w": 105,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 105,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 105,
+        "h": 86
+      }
+    },
+    "shock_03": {
+      "frame": {
+        "x": 315,
+        "y": 0,
+        "w": 105,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 105,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 105,
+        "h": 86
+      }
+    },
+    "grunt_00": {
+      "frame": {
+        "x": 0,
+        "y": 86,
+        "w": 104,
+        "h": 79
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 104,
+        "h": 79
+      },
+      "sourceSize": {
+        "w": 104,
+        "h": 79
+      }
+    },
+    "heavy_00": {
+      "frame": {
+        "x": 104,
+        "y": 86,
+        "w": 104,
+        "h": 79
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 104,
+        "h": 79
+      },
+      "sourceSize": {
+        "w": 104,
+        "h": 79
+      }
+    },
+    "player_00": {
+      "frame": {
+        "x": 208,
+        "y": 86,
+        "w": 104,
+        "h": 79
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 104,
+        "h": 79
+      },
+      "sourceSize": {
+        "w": 104,
+        "h": 79
+      }
+    },
+    "shock_00": {
+      "frame": {
+        "x": 312,
+        "y": 86,
+        "w": 104,
+        "h": 79
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 104,
+        "h": 79
+      },
+      "sourceSize": {
+        "w": 104,
+        "h": 79
+      }
+    },
+    "grunt_02": {
+      "frame": {
+        "x": 416,
+        "y": 86,
+        "w": 50,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 50,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 91
+      }
+    },
+    "heavy_02": {
+      "frame": {
+        "x": 0,
+        "y": 177,
+        "w": 50,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 50,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 91
+      }
+    },
+    "player_02": {
+      "frame": {
+        "x": 50,
+        "y": 177,
+        "w": 50,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 50,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 91
+      }
+    },
+    "shock_02": {
+      "frame": {
+        "x": 100,
+        "y": 177,
+        "w": 50,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 50,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 91
+      }
+    },
+    "grunt_01": {
+      "frame": {
+        "x": 150,
+        "y": 177,
+        "w": 50,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 50,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 86
+      }
+    },
+    "heavy_01": {
+      "frame": {
+        "x": 200,
+        "y": 177,
+        "w": 50,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 50,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 86
+      }
+    },
+    "player_01": {
+      "frame": {
+        "x": 250,
+        "y": 177,
+        "w": 50,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 50,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 86
+      }
+    },
+    "shock_01": {
+      "frame": {
+        "x": 300,
+        "y": 177,
+        "w": 50,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 50,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 50,
+        "h": 86
+      }
+    }
+  },
+  "meta": {
+    "app": "render_sprite + pack_atlas",
+    "version": "1.0",
+    "image": "sprites.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 512,
+      "h": 512
+    },
+    "scale": "1"
+  }
+}

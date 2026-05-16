@@ -29,10 +29,39 @@ export class PreloadScene extends Phaser.Scene {
       bar.width = 420 * value;
     });
 
+    // 3D-rendered character atlas (built via scripts/render_sprite.py +
+    // scripts/pack_atlas.py from Kenney's CC0 animated-characters-3 pack).
+    this.load.atlas("sprites", "atlas/sprites.png", "atlas/sprites.json");
+
+    // Everything else (FX, gates, bullets, environment) still procedural.
     buildAllTextures(this);
   }
 
   create(): void {
+    this.registerAnimations();
     this.scene.start("MenuScene");
+  }
+
+  private registerAnimations(): void {
+    const chars: Array<{ key: string; prefix: string }> = [
+      { key: "walk_player", prefix: "player" },
+      { key: "walk_grunt", prefix: "grunt" },
+      { key: "walk_shock", prefix: "shock" },
+      { key: "walk_heavy", prefix: "heavy" },
+    ];
+    for (const c of chars) {
+      if (this.anims.exists(c.key)) continue;
+      this.anims.create({
+        key: c.key,
+        frames: [
+          { key: "sprites", frame: `${c.prefix}_00` },
+          { key: "sprites", frame: `${c.prefix}_01` },
+          { key: "sprites", frame: `${c.prefix}_02` },
+          { key: "sprites", frame: `${c.prefix}_03` },
+        ],
+        frameRate: 10,
+        repeat: -1,
+      });
+    }
   }
 }
