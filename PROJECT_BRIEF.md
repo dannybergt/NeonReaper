@@ -1,58 +1,57 @@
 # NeonReaper — Project Brief
 
+> **Codename**, finaler Brand-Name TBD. Genre-Pivot vom Survivor-Auto-Shooter zum **Lane-Squad-Defense** am 2026-05-15 (ADR-009). Phase 1+2 als Archiv-Branches.
+
 ## Pitch in einem Satz
 
-NeonReaper ist ein 2.5D-isometrischer Auto-Shooter im Neon-Noir-Stil: Wellen von Gegnern, automatischer Beschuss, kombinierbare Waffenkategorien, sichtbar werdende Stärke- und Schwächephasen — also genau das, was Google-Play-Ads versprechen und nie liefern.
+Lane-Squad-Defense im Polish-Look der Last-War-Survival-Werbevideos: du steuerst einen Trupp Soldaten ausschließlich mit Links/Rechts durch einen scrollenden Korridor, sammelst Truppen- und Damage-Gates ein, vermeidest Traps, kämpfst gegen anrückende Zombie-Trupps und einen Wellen-Boss.
 
 ## Ziel
 
-Ein optisch hochwertiges Spiel bauen, das dem entspricht, was Mobile-Ads im Genre (Last Z: Survival Shooter, Last War: Survival, Survivor.io) suggerieren, aber nicht halten:
+Ein optisch hochwertiges, einfach zugängliches Spiel im Stil dessen, was Mobile-Ads für **Last War: Survival** zeigen (Special Ops / Frontline Breakthrough), aber nie liefern:
 
-- klare, sichtbare Progression
-- echte Waffenkategorien mit eigenen Mechaniken (nicht nur "DPS+10%")
-- ansprechende Bewegung, Treffer-Feedback, Partikel, Postprocessing
-- Stärke kann steigen **und** sinken — Spannungsbogen statt linearer Powercreep
+- klare, sichtbare Squad-Progression durch Gates
+- Stärke kann steigen **und** sinken (Traps, Combat-Verluste)
+- ansprechende Sprites, Treffer-Feedback, Particle-Effekte
+- bingebare 5-10 Minuten-Wellen-Runs
 
 ## Plattformen (Reihenfolge)
 
 1. **Browser** (Desktop + Mobile-Browser) — Prototyp, schnelle Iteration
-2. **Android** — Capacitor-Wrap des gleichen Builds, native Wrapper
-3. Optional später: iOS, Steam (Electron / Tauri)
+2. **Android** — Capacitor-Wrap, Touch-Drag-Steuerung
+3. Optional später: iOS, Steam
 
 ## Scope MVP (erste spielbare Slice)
 
-- 1 Charakter, 1 Map, 1 Run = 15 min
-- 3 Gegner-Typen (Walker, Runner, Brute) + 1 Boss
-- 4 Waffenkategorien (Pistol, Shotgun, Drone, Plasma)
-- Auto-Aim mit "nearest enemy"-Heuristik
-- XP, Level-Up-Pickup mit 3 Upgrades zur Auswahl
-- 1 Stärke-Senkungs-Mechanik ("Overheat" — siehe ARCHITECTURE)
-- Pause, Death-Screen, Restart
-- Score + Runtime tracking lokal (localStorage)
+- 1 Spielfeld (vertikaler Korridor)
+- Squad aus 1..N Soldaten in Formation
+- Steuerung: nur ← / → Tastatur + Maus-Drag + Touch
+- Auto-Fire der Squad nach oben
+- 5 Gate-Typen: `+N`, `×N`, `-N`, `+DMG`, `×DMG`
+- 3 Gegner-Typen marschierend nach unten
+- Boss pro Welle
+- Wave-Counter, Squad-Count-HUD, Damage-Tier-HUD
+- Menü / GameOver / Restart
 
 ## Nicht-Ziele (bewusst)
 
-- Kein Pay-to-Win, keine Ads, keine Loot-Boxen, keine F2P-Monetarisierung im MVP
-- Kein Online-Multiplayer
-- Kein Account-System / kein Server-Backend im MVP
-- Kein Base-Building (das ist Last-War-Mechanik, anderes Genre)
-- Kein Realismus-Render — wir gehen stilisiert, das ist günstiger und altert besser
+- Kein Pay-to-Win, keine Ads, keine Loot-Boxen
+- Kein Base-Building, kein Strategie-Layer
+- Kein Multiplayer / Backend
+- Keine Hyper-Animationen — wir gehen stilisierte 2D-Sprites
 
 ## Stakeholder
 
 - **Owner:** Danny Bergt (danny.bergt.db@googlemail.com)
-- **Agent:** Claude Code (Senior Engineer / Architect / DevSecOps)
+- **Agent:** Claude Code
 
 ## Erfolgskriterien
 
-- **MVP-Demo läuft fluide (60 FPS) im Browser auf Mid-Tier-Hardware**
-- **Look hält dem Vergleich mit Werbevideos der Genre-Referenzen stand** (subjektive Bewertung durch Owner)
-- **5-Minuten-Demo überzeugt einen unbedarften Tester, dass sich ein Run lohnt**
+- 60 FPS im Browser auf Mid-Tier-Hardware
+- Look hält den Vergleich mit Last-War-Werbevideos stand (Owner-Bewertung)
+- 5-Minuten-Run = mindestens 1 spürbarer Squad-Wachstums-Peak und 1 spürbarer Verlust-Tiefpunkt
 
 ## Referenzen (Genre + Look)
 
-- Survivor.io (Mechanik-Goldstandard für Auto-Shooter)
-- Vampire Survivors (Originator des Genres)
-- Last Z: Survival Shooter (Werbe-Look, den User explizit will)
-- Last War: Survival Game (visuelle Polish-Referenz)
-- Hades (Iso-Look + Postprocessing als Inspiration)
+- **Last War: Survival Werbevideos** (Special Ops / Frontline Breakthrough — Hauptvorbild für Look + Gameplay)
+- Andere Lane-Defender im Genre: Stickman Army, Crowd Master 3D, Total Battle Crowd, Tall Man Run

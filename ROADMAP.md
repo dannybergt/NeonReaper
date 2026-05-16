@@ -14,23 +14,26 @@ Klassifizierung: **MUST** | SHOULD | COULD | ROADMAP
 
 Ziel: 5-Minuten-Demo, in der ein Run startet, Gegner gemäht werden, Level-Ups gepickt werden, Tod und Restart funktionieren.
 
-- ⬜ Player Movement (WASD + Mobile-Joystick)
-- ⬜ Camera-Follow + sanfter Zoom
-- ⬜ Enemy-Spawner mit 1 Gegner-Typ (Walker)
-- ⬜ Auto-Aim auf nächsten Gegner
-- ⬜ Pistole (Default-Waffe)
-- ⬜ Projectile-Pool, Hit-Detection, Death-Effekt
-- ⬜ XP-Drop, XP-Magnet (Pickup-Radius wächst mit Level)
-- ⬜ Level-Up-UI: 3 Upgrade-Cards
-- ⬜ HUD (HP, XP-Bar, Timer, Score)
-- ⬜ Death-Screen + Restart-Button
+- ✅ Player Movement (WASD/Arrows; Mobile-Joystick offen)
+- ✅ Camera-Follow + sanfter Zoom
+- ✅ Enemy-Spawner mit 1 Gegner-Typ (Walker)
+- ✅ Auto-Aim auf nächsten Gegner
+- ✅ Pistole (Default-Waffe)
+- ✅ Projectile + Hit-Detection (Pool als spätere Optimierung)
+- ✅ XP-Drop, XP-Magnet
+- ✅ Level-Up-UI: 3 Upgrade-Cards
+- ✅ HUD (HP, XP-Bar, Timer, Score, Level)
+- ✅ Death-Screen + Restart-Button
+- ⬜ Mobile-Joystick (zu Phase 2 verschoben)
+- ⬜ Pickup-Radius wächst mit Level (über `pickup_radius_1`-Upgrade als manuelle Wahl erfüllt; passives Wachstum offen)
 
 ## Phase 2 — Genre-Pflichtausstattung (MUST + SHOULD)
 
 - ⬜ 4 Waffenkategorien (Pistole, Shotgun, Drone, Plasma) — jeweils unique Mechanik
-- ⬜ 3 Gegner-Typen + Schwierigkeitskurve (Walker, Runner, Brute) + 1 Boss bei Minute 5
-- ⬜ Heat-System (Stärke-Senkung #1)
-- ⬜ Curse-Elite-Mechanik (Stärke-Senkung #2)
+- ✅ 3 Gegner-Typen + Schwierigkeitskurve (Walker, Runner, Brute)
+- ✅ 1 Boss bei Minute 5
+- ✅ Heat-System (Stärke-Senkung #1)
+- ✅ Curse-Elite-Mechanik (Stärke-Senkung #2)
 - ⬜ Trade-Off-Upgrades im Pool
 - ⬜ Audio: SFX + Musik (Royalty-free)
 - ⬜ Postprocessing-Bloom Pipeline (Neon-Look)
