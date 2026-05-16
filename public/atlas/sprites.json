@@ -1,323 +1,663 @@
 {
   "frames": {
-    "grunt_03": {
+    "grunt_07": {
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       },
       "sourceSize": {
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       }
     },
-    "heavy_03": {
+    "heavy_07": {
       "frame": {
-        "x": 105,
+        "x": 106,
         "y": 0,
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       },
       "sourceSize": {
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       }
     },
-    "player_03": {
+    "player_07": {
       "frame": {
-        "x": 210,
+        "x": 212,
         "y": 0,
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       },
       "sourceSize": {
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       }
     },
-    "shock_03": {
+    "shock_07": {
       "frame": {
-        "x": 315,
+        "x": 318,
         "y": 0,
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       },
       "sourceSize": {
-        "w": 105,
-        "h": 86
+        "w": 106,
+        "h": 79
       }
     },
     "grunt_00": {
       "frame": {
         "x": 0,
-        "y": 86,
-        "w": 104,
-        "h": 79
+        "y": 79,
+        "w": 106,
+        "h": 75
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 104,
-        "h": 79
+        "w": 106,
+        "h": 75
       },
       "sourceSize": {
-        "w": 104,
-        "h": 79
+        "w": 106,
+        "h": 75
       }
     },
     "heavy_00": {
       "frame": {
-        "x": 104,
-        "y": 86,
-        "w": 104,
-        "h": 79
+        "x": 106,
+        "y": 79,
+        "w": 106,
+        "h": 75
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 104,
-        "h": 79
+        "w": 106,
+        "h": 75
       },
       "sourceSize": {
-        "w": 104,
-        "h": 79
+        "w": 106,
+        "h": 75
       }
     },
     "player_00": {
       "frame": {
-        "x": 208,
-        "y": 86,
-        "w": 104,
-        "h": 79
+        "x": 212,
+        "y": 79,
+        "w": 106,
+        "h": 75
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 104,
-        "h": 79
+        "w": 106,
+        "h": 75
       },
       "sourceSize": {
-        "w": 104,
-        "h": 79
+        "w": 106,
+        "h": 75
       }
     },
     "shock_00": {
       "frame": {
-        "x": 312,
-        "y": 86,
-        "w": 104,
-        "h": 79
+        "x": 318,
+        "y": 79,
+        "w": 106,
+        "h": 75
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 104,
-        "h": 79
+        "w": 106,
+        "h": 75
       },
       "sourceSize": {
-        "w": 104,
-        "h": 79
-      }
-    },
-    "grunt_02": {
-      "frame": {
-        "x": 416,
-        "y": 86,
-        "w": 50,
-        "h": 91
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 50,
-        "h": 91
-      },
-      "sourceSize": {
-        "w": 50,
-        "h": 91
-      }
-    },
-    "heavy_02": {
-      "frame": {
-        "x": 0,
-        "y": 177,
-        "w": 50,
-        "h": 91
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 50,
-        "h": 91
-      },
-      "sourceSize": {
-        "w": 50,
-        "h": 91
-      }
-    },
-    "player_02": {
-      "frame": {
-        "x": 50,
-        "y": 177,
-        "w": 50,
-        "h": 91
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 50,
-        "h": 91
-      },
-      "sourceSize": {
-        "w": 50,
-        "h": 91
-      }
-    },
-    "shock_02": {
-      "frame": {
-        "x": 100,
-        "y": 177,
-        "w": 50,
-        "h": 91
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 50,
-        "h": 91
-      },
-      "sourceSize": {
-        "w": 50,
-        "h": 91
+        "w": 106,
+        "h": 75
       }
     },
     "grunt_01": {
       "frame": {
-        "x": 150,
-        "y": 177,
-        "w": 50,
-        "h": 86
+        "x": 0,
+        "y": 154,
+        "w": 98,
+        "h": 81
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 50,
-        "h": 86
+        "w": 98,
+        "h": 81
       },
       "sourceSize": {
-        "w": 50,
-        "h": 86
+        "w": 98,
+        "h": 81
       }
     },
     "heavy_01": {
       "frame": {
-        "x": 200,
-        "y": 177,
-        "w": 50,
-        "h": 86
+        "x": 98,
+        "y": 154,
+        "w": 98,
+        "h": 81
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 50,
-        "h": 86
+        "w": 98,
+        "h": 81
       },
       "sourceSize": {
-        "w": 50,
-        "h": 86
+        "w": 98,
+        "h": 81
       }
     },
     "player_01": {
       "frame": {
-        "x": 250,
-        "y": 177,
-        "w": 50,
-        "h": 86
+        "x": 196,
+        "y": 154,
+        "w": 98,
+        "h": 81
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 50,
-        "h": 86
+        "w": 98,
+        "h": 81
       },
       "sourceSize": {
-        "w": 50,
-        "h": 86
+        "w": 98,
+        "h": 81
       }
     },
     "shock_01": {
       "frame": {
-        "x": 300,
-        "y": 177,
-        "w": 50,
-        "h": 86
+        "x": 294,
+        "y": 154,
+        "w": 98,
+        "h": 81
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 50,
-        "h": 86
+        "w": 98,
+        "h": 81
       },
       "sourceSize": {
-        "w": 50,
-        "h": 86
+        "w": 98,
+        "h": 81
+      }
+    },
+    "boss": {
+      "frame": {
+        "x": 392,
+        "y": 154,
+        "w": 106,
+        "h": 73
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 106,
+        "h": 73
+      },
+      "sourceSize": {
+        "w": 106,
+        "h": 73
+      }
+    },
+    "grunt_06": {
+      "frame": {
+        "x": 0,
+        "y": 235,
+        "w": 97,
+        "h": 78
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 97,
+        "h": 78
+      },
+      "sourceSize": {
+        "w": 97,
+        "h": 78
+      }
+    },
+    "heavy_06": {
+      "frame": {
+        "x": 97,
+        "y": 235,
+        "w": 97,
+        "h": 78
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 97,
+        "h": 78
+      },
+      "sourceSize": {
+        "w": 97,
+        "h": 78
+      }
+    },
+    "player_06": {
+      "frame": {
+        "x": 194,
+        "y": 235,
+        "w": 97,
+        "h": 78
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 97,
+        "h": 78
+      },
+      "sourceSize": {
+        "w": 97,
+        "h": 78
+      }
+    },
+    "shock_06": {
+      "frame": {
+        "x": 291,
+        "y": 235,
+        "w": 97,
+        "h": 78
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 97,
+        "h": 78
+      },
+      "sourceSize": {
+        "w": 97,
+        "h": 78
+      }
+    },
+    "grunt_05": {
+      "frame": {
+        "x": 388,
+        "y": 235,
+        "w": 65,
+        "h": 90
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 65,
+        "h": 90
+      },
+      "sourceSize": {
+        "w": 65,
+        "h": 90
+      }
+    },
+    "heavy_05": {
+      "frame": {
+        "x": 0,
+        "y": 325,
+        "w": 65,
+        "h": 90
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 65,
+        "h": 90
+      },
+      "sourceSize": {
+        "w": 65,
+        "h": 90
+      }
+    },
+    "player_05": {
+      "frame": {
+        "x": 65,
+        "y": 325,
+        "w": 65,
+        "h": 90
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 65,
+        "h": 90
+      },
+      "sourceSize": {
+        "w": 65,
+        "h": 90
+      }
+    },
+    "shock_05": {
+      "frame": {
+        "x": 130,
+        "y": 325,
+        "w": 65,
+        "h": 90
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 65,
+        "h": 90
+      },
+      "sourceSize": {
+        "w": 65,
+        "h": 90
+      }
+    },
+    "grunt_02": {
+      "frame": {
+        "x": 195,
+        "y": 325,
+        "w": 65,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 65,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 65,
+        "h": 88
+      }
+    },
+    "heavy_02": {
+      "frame": {
+        "x": 260,
+        "y": 325,
+        "w": 65,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 65,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 65,
+        "h": 88
+      }
+    },
+    "player_02": {
+      "frame": {
+        "x": 325,
+        "y": 325,
+        "w": 65,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 65,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 65,
+        "h": 88
+      }
+    },
+    "shock_02": {
+      "frame": {
+        "x": 390,
+        "y": 325,
+        "w": 65,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 65,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 65,
+        "h": 88
+      }
+    },
+    "grunt_04": {
+      "frame": {
+        "x": 455,
+        "y": 325,
+        "w": 45,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 45,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 45,
+        "h": 91
+      }
+    },
+    "heavy_04": {
+      "frame": {
+        "x": 0,
+        "y": 416,
+        "w": 45,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 45,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 45,
+        "h": 91
+      }
+    },
+    "player_04": {
+      "frame": {
+        "x": 45,
+        "y": 416,
+        "w": 45,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 45,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 45,
+        "h": 91
+      }
+    },
+    "shock_04": {
+      "frame": {
+        "x": 90,
+        "y": 416,
+        "w": 45,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 45,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 45,
+        "h": 91
+      }
+    },
+    "grunt_03": {
+      "frame": {
+        "x": 135,
+        "y": 416,
+        "w": 45,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 45,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 45,
+        "h": 88
+      }
+    },
+    "heavy_03": {
+      "frame": {
+        "x": 180,
+        "y": 416,
+        "w": 45,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 45,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 45,
+        "h": 88
+      }
+    },
+    "player_03": {
+      "frame": {
+        "x": 225,
+        "y": 416,
+        "w": 45,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 45,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 45,
+        "h": 88
+      }
+    },
+    "shock_03": {
+      "frame": {
+        "x": 270,
+        "y": 416,
+        "w": 45,
+        "h": 88
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 45,
+        "h": 88
+      },
+      "sourceSize": {
+        "w": 45,
+        "h": 88
       }
     }
   },

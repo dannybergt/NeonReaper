@@ -443,6 +443,35 @@ function buildSmokePuff(g: G, p: Pal): void {
   g.clear();
 }
 
+function buildDropShadow(g: G): void {
+  const W = 64;
+  const H = 28;
+  g.clear();
+  // Layered ellipses for soft falloff
+  g.fillStyle(0x000000, 0.12).fillEllipse(W / 2, H / 2, 60, 24);
+  g.fillStyle(0x000000, 0.22).fillEllipse(W / 2, H / 2, 50, 20);
+  g.fillStyle(0x000000, 0.35).fillEllipse(W / 2, H / 2, 40, 16);
+  g.fillStyle(0x000000, 0.5).fillEllipse(W / 2, H / 2, 28, 11);
+  g.generateTexture("tex_drop_shadow", W, H);
+  g.clear();
+}
+
+function buildBossAura(g: G, p: Pal): void {
+  const W = 220;
+  const H = 220;
+  const cx = W / 2;
+  const cy = H / 2;
+  g.clear();
+  // Outer dim ring
+  g.fillStyle(p.bossCore, 0.08).fillCircle(cx, cy, 100);
+  g.fillStyle(p.bossCore, 0.15).fillCircle(cx, cy, 80);
+  g.fillStyle(p.bossCore, 0.25).fillCircle(cx, cy, 56);
+  g.fillStyle(p.bossHighlight, 0.35).fillCircle(cx, cy, 36);
+  g.fillStyle(0xff8080, 0.45).fillCircle(cx, cy, 22);
+  g.generateTexture("tex_boss_aura", W, H);
+  g.clear();
+}
+
 // ── Asphalt lane tile ───────────────────────────────────────────────
 function buildLaneTile(g: G, p: Pal): void {
   const W = 256;
@@ -612,24 +641,24 @@ export function buildAllTextures(scene: Phaser.Scene): void {
   // Environment + FX still procedural (cheap, no asset bloat).
   buildLaneTile(g, p);
   buildLaneEdge(g, p);
-  buildBoss(g, p);           // Boss is still procedural — 280×144 mutant
   buildBullet(g, p);
   buildEnemyBullet(g, p);
   buildMuzzleFlash(g, p);
   buildHitSpark(g, p);
   buildSmokePuff(g, p);
+  buildDropShadow(g);
   buildGateFrame(g);
   buildWeaponCrate(g);
   buildVignette(g);
+  buildBossAura(g, p);
 
-  // Characters (player/grunt/shock/heavy) come from the 3D-rendered atlas
-  // loaded by PreloadScene via this.load.atlas("sprites", ...).
-  // We still keep the procedural builders below as a fallback / reference,
-  // but they are no longer invoked.
+  // Characters (player/grunt/shock/heavy/boss) come from the 3D-rendered atlas.
+  // We keep the procedural builders below as fallback/reference, not invoked.
   void buildPlayerSoldier;
   void buildEnemySoldier;
   void buildEnemyShock;
   void buildEnemyHeavy;
+  void buildBoss;
 
   g.destroy();
 }

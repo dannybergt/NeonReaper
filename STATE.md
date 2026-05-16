@@ -1,6 +1,6 @@
 # NeonReaper — Current State
 
-_Last updated: 2026-05-16 (Lane Phase 3c — 3D-Render-Pipeline für Charaktere)_
+_Last updated: 2026-05-17 (Lane Phase 3d — Polish-Pass + GitHub-Sync + Docker-Hub-Setup)_
 
 ## What's running
 
@@ -13,6 +13,28 @@ Phase 1+2-Survivor-Code wurde komplett entfernt — Branches `feature/phase-1-2-
 |------|----------------|----------------------------------------|
 | 5173 | Vite Dev       | Standard — Vite wechselt automatisch wenn belegt (5174/5175/…) |
 | 8080 | nginx (Docker) | nicht aktiv |
+
+## Was wurde gemacht (Session 2026-05-17 — Phase 3d: Polish + Sync)
+
+**Owner-Feedback** zu Phase 3c: "noch nicht gut genug, andere Waffen/Stärken wären wichtig", "Grafik muss bestmöglich".
+
+Sync:
+- **GitHub-Sync**: alle 4 Branches gepusht zu `dannybergt/NeonReaper`.
+- **Docker-Hub-Sync**: `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN` als gh-Secrets gesetzt. Workflow-Bug in `docker-publish.yml` gefixt (`secrets.X != ''` in `if:` ist deprecated; jetzt via `env:` + Step-Output).
+- Tag v0.0.1 wird gleich gepusht → triggert auto-Build + Push zu docker.io/dannybergt/neonreaper.
+
+Polish:
+- **EEVEE_NEXT** statt Workbench für Render — mit korrektem Material-Setup (Image-Tex auf alle Material-Slots aller Meshes) zeigt jetzt detaillierte Soldaten. Cycles im --background-Mode produziert auf diesem System Mini-Renders (vermutlich GPU-Init-Issue) — wird via `NR_RENDER_ENGINE` env-var optional.
+- **8 Walk-Frames** statt 4 → flüssigere Animation, 12 FPS Loop.
+- **Boss als 3D-Render**: `boss` Frame im Atlas (zombieMaleA idle), in Phaser 3× scaled + roter Tint + Phaser-Graphics-Aura-Pulse drumherum. Konsistent mit Squad/Enemies.
+- **Heavy vs Shocktrooper visuell unterscheidbar**: Heavy 1.05× scale + grün-grau Tint, Shocktrooper 0.85× scale + rosa-Tint, Grunt baseline.
+- **Drop-Shadow** unter jedem Squad-/Enemy-Sprite: weicher 4-Layer-Ellipsen-Shadow als eigenes Sprite (`tex_drop_shadow`), scaled mit Sprite, scrollt mit, wird bei destroy/cleanup mit-zerstört.
+- **Boss-Aura**: 5-Layer-Glow-Sprite ADD-blendmode, scale-pulst zusammen mit Boss.
+- **Atlas**: jetzt 33 Frames (4×8 walk + 1 boss), 512×512 PNG, 165 KB.
+
+Workflow-Fix Details:
+- `if: ${{ secrets.X != '' }}` durch `steps.check.outputs.have_secrets` ersetzt (Step prüft env-Var und schreibt Output).
+- Skip-notice-Step entfernt (Check-Step printed bei Bedarf).
 
 ## Was wurde gemacht (Session 2026-05-16 — Phase 3c: 3D-Render-Pipeline)
 

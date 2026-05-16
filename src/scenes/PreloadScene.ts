@@ -53,13 +53,13 @@ export class PreloadScene extends Phaser.Scene {
       if (this.anims.exists(c.key)) continue;
       this.anims.create({
         key: c.key,
-        frames: [
-          { key: "sprites", frame: `${c.prefix}_00` },
-          { key: "sprites", frame: `${c.prefix}_01` },
-          { key: "sprites", frame: `${c.prefix}_02` },
-          { key: "sprites", frame: `${c.prefix}_03` },
-        ],
-        frameRate: 10,
+        frames: this.anims.generateFrameNames("sprites", {
+          prefix: `${c.prefix}_`,
+          start: 0,
+          end: 7,
+          zeroPad: 2,
+        }),
+        frameRate: 12,
         repeat: -1,
       });
     }

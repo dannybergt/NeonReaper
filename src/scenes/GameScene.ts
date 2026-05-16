@@ -36,7 +36,7 @@ interface GateVisualHandle {
 }
 
 interface BossHandle {
-  sprite: Phaser.GameObjects.Image;
+  sprite: Phaser.GameObjects.Sprite;
   hp: number;
   maxHp: number;
   fireTimerMs: number;
@@ -205,14 +205,20 @@ export class GameScene extends Phaser.Scene {
   private rebuildTroopSprites(): void {
     const visualN = Math.min(this.squad.troops, GAME_CONFIG.squad.visualTroopCap);
     while (this.troopSprites.length < visualN) {
+      const shadow = this.add.image(0, 12, "tex_drop_shadow");
+      shadow.setScale(0.45, 0.35);
+      this.squadAnchor.add(shadow);
       const sprite = this.add.sprite(0, 0, "sprites", "player_00");
       sprite.setScale(0.7);
-      sprite.play({ key: "walk_player", startFrame: Math.floor(Math.random() * 4) });
+      sprite.play({ key: "walk_player", startFrame: Math.floor(Math.random() * 8) });
+      sprite.setData("shadow", shadow);
       this.squadAnchor.add(sprite);
       this.troopSprites.push(sprite);
     }
     while (this.troopSprites.length > visualN) {
       const s = this.troopSprites.pop();
+      const shadow = s?.getData("shadow") as Phaser.GameObjects.Image | undefined;
+      shadow?.destroy();
       s?.destroy();
     }
     this.layoutTroopFormation();
@@ -231,7 +237,10 @@ export class GameScene extends Phaser.Scene {
       const c = i % cols;
       const x = -w / 2 + c * gap;
       const y = -h / 2 + r * gap;
-      this.troopSprites[i]!.setPosition(x, y);
+      const s = this.troopSprites[i]!;
+      s.setPosition(x, y);
+      const shadow = s.getData("shadow") as Phaser.GameObjects.Image | undefined;
+      shadow?.setPosition(x, y + 12);
     }
   }
 
@@ -320,16 +329,22 @@ export class GameScene extends Phaser.Scene {
     const gap = tier === "heavy" ? 50 : 40;
     const animKey = `walk_${tier === "shocktrooper" ? "shock" : tier}`;
     const firstFrame = `${tier === "shocktrooper" ? "shock" : tier}_00`;
-    const scale = tier === "heavy" ? 0.95 : tier === "shocktrooper" ? 0.78 : 0.72;
+    const scale = tier === "heavy" ? 1.05 : tier === "shocktrooper" ? 0.85 : 0.72;
+    const tint = tier === "heavy" ? 0x808a80 : tier === "shocktrooper" ? 0xffb0a0 : 0xffffff;
     for (let i = 0; i < visualN; i++) {
       const r = Math.floor(i / cols);
       const c = i % cols;
       const x = cx + (c - (cols - 1) / 2) * gap;
       const y = worldY + (r - (rows - 1) / 2) * gap;
+      const shadow = this.add.image(x, y + 14 * scale, "tex_drop_shadow");
+      shadow.setScale(0.5 * scale, 0.4 * scale);
+      shadow.setDepth(9);
       const s = this.add.sprite(x, y, "sprites", firstFrame);
       s.setScale(scale);
       s.setDepth(10);
-      s.play({ key: animKey, startFrame: Math.floor(Math.random() * 4) });
+      s.setTint(tint);
+      s.play({ key: animKey, startFrame: Math.floor(Math.random() * 8) });
+      s.setData("shadow", shadow);
       troopSprites.push(s);
     }
     const countLabel = this.add
@@ -393,8 +408,17 @@ export class GameScene extends Phaser.Scene {
   private spawnBoss(hp: number): void {
     if (this.boss) return;
     const { width } = this.scale;
-    const sprite = this.add.image(width / 2, -80, "tex_boss");
+    // Pulsing red aura behind the boss
+    const aura = this.add.image(width / 2, -80, "tex_boss_aura");
+    aura.setDepth(19);
+    aura.setBlendMode(Phaser.BlendModes.ADD);
+    aura.setScale(1.4);
+    // 3D-rendered character sprite on top (zombieMaleA, scaled big + dark tint)
+    const sprite = this.add.sprite(width / 2, -80, "sprites", "boss");
+    sprite.setScale(3.0);
+    sprite.setTint(0xff8080);
     sprite.setDepth(20);
+    sprite.setData("aura", aura);
     this.boss = { sprite, hp, maxHp: hp, fireTimerMs: 0 };
     this.bossActive = true;
     this.bossLabel.setVisible(true);
@@ -402,15 +426,23 @@ export class GameScene extends Phaser.Scene {
     this.bossHpBar.setVisible(true);
 
     this.tweens.add({
-      targets: sprite,
-      y: 180,
+      targets: [sprite, aura],
+      y: 220,
       duration: 1400,
       ease: "Sine.easeOut",
     });
     this.tweens.add({
       targets: sprite,
-      scale: { from: 1.0, to: 1.05 },
+      scale: { from: 3.0, to: 3.15 },
       duration: 900,
+      yoyo: true,
+      repeat: -1,
+    });
+    this.tweens.add({
+      targets: aura,
+      alpha: { from: 0.85, to: 0.45 },
+      scale: { from: 1.4, to: 1.6 },
+      duration: 1100,
       yoyo: true,
       repeat: -1,
     });
@@ -426,7 +458,11 @@ export class GameScene extends Phaser.Scene {
     for (const e of this.enemies) {
       e.group.worldY += dy;
       e.countLabel.y += dy;
-      for (const s of e.troopSprites) s.y += dy;
+      for (const s of e.troopSprites) {
+        s.y += dy;
+        const shadow = s.getData("shadow") as Phaser.GameObjects.Image | undefined;
+        if (shadow) shadow.y += dy;
+      }
     }
     for (const g of this.gates) {
       g.container.y += dy;
@@ -583,6 +619,8 @@ export class GameScene extends Phaser.Scene {
       const targetVisuals = Math.min(Math.ceil(e.group.troops), e.troopSprites.length);
       while (e.troopSprites.length > targetVisuals) {
         const s = e.troopSprites.pop();
+        const shadow = s?.getData("shadow") as Phaser.GameObjects.Image | undefined;
+        shadow?.destroy();
         s?.destroy();
       }
       e.countLabel.setText(`${Math.max(0, Math.ceil(e.group.troops))}`);
@@ -638,6 +676,8 @@ export class GameScene extends Phaser.Scene {
     if (!this.boss) return;
     const x = this.boss.sprite.x;
     const y = this.boss.sprite.y;
+    const aura = this.boss.sprite.getData("aura") as Phaser.GameObjects.Image | undefined;
+    aura?.destroy();
     this.deathSmokeAt(x, y);
     this.cameras.main.flash(500, 255, 100, 80);
     this.cameras.main.shake(420, 0.012);
@@ -737,7 +777,11 @@ export class GameScene extends Phaser.Scene {
     const offscreen = this.scale.height + 120;
     this.enemies = this.enemies.filter((e) => {
       if (!e.group.alive || e.group.worldY > offscreen) {
-        e.troopSprites.forEach((s) => s.destroy());
+        e.troopSprites.forEach((s) => {
+          const shadow = s.getData("shadow") as Phaser.GameObjects.Image | undefined;
+          shadow?.destroy();
+          s.destroy();
+        });
         e.countLabel.destroy();
         return false;
       }

@@ -106,29 +106,47 @@ if facing == "down":
 else:
     root.rotation_euler = (0, 0, 0)
 
-# Replace texture on the mesh's first material with the supplied skin PNG.
-if mesh.data.materials:
-    mat = mesh.data.materials[0]
-else:
-    mat = bpy.data.materials.new(name="CharMat")
-    mesh.data.materials.append(mat)
-mat.use_nodes = True
-nodes = mat.node_tree.nodes
-links = mat.node_tree.links
-bsdf = nodes.get("Principled BSDF")
-if bsdf is None:
-    bsdf = nodes.new(type="ShaderNodeBsdfPrincipled")
-output = nodes.get("Material Output")
-if output is None:
-    output = nodes.new(type="ShaderNodeOutputMaterial")
-links.new(bsdf.outputs["BSDF"], output.inputs["Surface"])
-# Remove old image-tex nodes so we don't stack textures across iterations.
-for n in list(nodes):
-    if n.type == "TEX_IMAGE":
-        nodes.remove(n)
-tex_node = nodes.new(type="ShaderNodeTexImage")
-tex_node.image = bpy.data.images.load(skin_png, check_existing=False)
-links.new(tex_node.outputs["Color"], bsdf.inputs["Base Color"])
+# Load skin image once.
+skin_image = bpy.data.images.load(skin_png, check_existing=False)
+
+# Apply the skin to EVERY mesh's EVERY material slot. Kenney's medium-character
+# FBX has a single mesh with one material, but some packs split body/clothes
+# into multiple meshes; this keeps us robust.
+all_meshes = [o for o in bpy.data.objects if o.type == "MESH"]
+print("DEBUG meshes=" + str(len(all_meshes)))
+for m in all_meshes:
+    if not m.data.materials:
+        mat = bpy.data.materials.new(name=m.name + "_Mat")
+        m.data.materials.append(mat)
+    for slot_idx in range(len(m.data.materials)):
+        mat = m.data.materials[slot_idx]
+        if mat is None:
+            mat = bpy.data.materials.new(name=m.name + "_Mat" + str(slot_idx))
+            m.data.materials[slot_idx] = mat
+        mat.use_nodes = True
+        nodes = mat.node_tree.nodes
+        links = mat.node_tree.links
+        # Drop any existing image-tex nodes so we don't stack.
+        for n in list(nodes):
+            if n.type == "TEX_IMAGE":
+                nodes.remove(n)
+        bsdf = nodes.get("Principled BSDF")
+        if bsdf is None:
+            bsdf = nodes.new(type="ShaderNodeBsdfPrincipled")
+        output = nodes.get("Material Output")
+        if output is None:
+            output = nodes.new(type="ShaderNodeOutputMaterial")
+        links.new(bsdf.outputs["BSDF"], output.inputs["Surface"])
+        # Reduce roughness on body for crisper specular highlights.
+        try:
+            bsdf.inputs["Roughness"].default_value = 0.55
+            bsdf.inputs["Specular IOR Level"].default_value = 0.3
+        except Exception:
+            pass
+        tex_node = nodes.new(type="ShaderNodeTexImage")
+        tex_node.image = skin_image
+        tex_node.interpolation = "Linear"
+        links.new(tex_node.outputs["Color"], bsdf.inputs["Base Color"])
 
 # Auto-frame the imported geometry: compute world-space bbox of all visible
 # meshes, drop a 55°-tilted ortho camera centered on it. This avoids the
@@ -199,21 +217,48 @@ def add_light(name, kind, energy, location, rotation):
     obj.rotation_euler = rotation
     return obj
 
-add_light("Key", "SUN", 4.0, (2, -3, 5), (math.radians(40), math.radians(15), math.radians(20)))
-add_light("Fill", "SUN", 1.5, (-3, -1, 3), (math.radians(45), math.radians(-20), math.radians(-30)))
-add_light("Rim", "SUN", 2.0, (0, 4, 3), (math.radians(120), 0, 0))
+add_light("Key", "SUN", 5.5, (2, -3, 5), (math.radians(40), math.radians(15), math.radians(20)))
+add_light("Fill", "SUN", 2.0, (-3, -1, 3), (math.radians(45), math.radians(-20), math.radians(-30)))
+add_light("Rim", "SUN", 3.5, (0, 4, 3), (math.radians(120), 0, 0))
 
-# Render settings — Workbench is the most reliable headless option (no
-# shading complexity, just textures and lights).
+# World ambient — gives a tiny base illumination so deep shadows don't go pitch black.
+world = bpy.context.scene.world
+if world is None:
+    world = bpy.data.worlds.new("World")
+    bpy.context.scene.world = world
+world.use_nodes = True
+world_nodes = world.node_tree.nodes
+bg_node = world_nodes.get("Background")
+if bg_node:
+    bg_node.inputs["Color"].default_value = (0.06, 0.07, 0.09, 1.0)
+    bg_node.inputs["Strength"].default_value = 1.0
+
+# Render settings.
+# We try EEVEE_NEXT (Blender 5.x realtime engine with proper shading + shadows)
+# and fall back to Workbench if EEVEE produces an empty/broken render in the
+# --background runtime (which happens on some Win11 GPU configs).
 scene = bpy.context.scene
-scene.render.engine = "BLENDER_WORKBENCH"
+RENDER_ENGINE = os.environ.get("NR_RENDER_ENGINE", "BLENDER_EEVEE_NEXT")
 try:
-    scene.display.shading.light = "STUDIO"
-    scene.display.shading.color_type = "TEXTURE"
-    scene.display.shading.show_shadows = True
-    scene.display.shading.shadow_intensity = 0.4
-except Exception as e:
-    print(f"DEBUG shading config: {e}")
+    scene.render.engine = RENDER_ENGINE
+except Exception:
+    scene.render.engine = "BLENDER_WORKBENCH"
+
+if scene.render.engine == "BLENDER_EEVEE_NEXT":
+    try:
+        scene.eevee.taa_render_samples = 32
+        scene.eevee.use_shadow = True
+        scene.eevee.use_raytracing = True
+    except Exception as e:
+        print("DEBUG eevee config: " + str(e))
+elif scene.render.engine == "BLENDER_WORKBENCH":
+    try:
+        scene.display.shading.light = "STUDIO"
+        scene.display.shading.color_type = "TEXTURE"
+        scene.display.shading.show_shadows = True
+        scene.display.shading.shadow_intensity = 0.4
+    except Exception:
+        pass
 scene.render.resolution_x = 192
 scene.render.resolution_y = 192
 scene.render.resolution_percentage = 100
