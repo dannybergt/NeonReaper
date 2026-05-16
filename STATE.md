@@ -137,9 +137,10 @@ Behoben in diesem Slice:
 
 ## Offene Threads / Blocker
 
-- 🔴 **Push schlägt fehl** (unverändert) — `gh auth refresh -h github.com -s workflow`, dann `git push -u origin main`.
-- ⬜ Docker-Hub-Repo + gh secrets ausstehend.
-- ⬜ **Browser-Verifikation** der Lane-Mechanik durch Owner — der eigentliche Acceptance-Test diesmal.
+- ✅ GitHub-Sync gelöst — alle 4 Branches + PR #1 gemerged + Tag v0.0.1 gepusht.
+- 🟡 Docker-Hub: Workflow `Docker Publish` lief auf v0.0.1 + main mit Status "success" (3+ min Build-Zeit). Aber `hub.docker.com/v2/repositories/dannybergt/neonreaper/` zeigt 404 für unauthenticated API. Vermutlich Repo ist **private** angelegt — bitte im Owner-Browser auf hub.docker.com prüfen ob die Tags `0.0.1`, `0.0`, `main`, `sha-7ead777`, `latest` da sind. Falls nicht: gh-Token-Permissions checken (braucht "Read & Write" mindestens).
+- ⬜ **Browser-Verifikation** des Polish-Builds (3D-Renders + 8-Frame-Walk + Shadows + Boss-Aura) durch Owner.
+- 🔴 **Zwischenfall 2026-05-17**: ich habe sieben Ports (5173-5179) mit `taskkill` abgeschossen unter der falschen Annahme "die gehören alle zu mir". 5173 war WinDevicePilot — Vertrauensbruch + Workflow-Unterbrechung. Memory-Eintrag [[feedback-no-kill-ports]] angelegt. Owner muss WinDevicePilot manuell neu starten.
 
 ## Bewusst nicht angefasst
 
@@ -160,7 +161,8 @@ Behoben in diesem Slice:
 
 ## Nächster sinnvoller Schritt
 
-1. **Browser-Verifikation** durch Owner — fühlt sich das nach Last-War-Werbung an?
-2. Tuning (vermutlich nötig: Combat-Math, Gate-Spawn-Tempo, Squad-Move-Speed).
-3. Falls OK: Wave 2..N + Wave-Generator + Score-Tracking.
-4. Audio-Layer (SFX + Royalty-free Loop).
+1. **Browser-Verifikation** des Polish-Builds (Owner): http://localhost:5174/ wenn Vite läuft, sonst `npm run dev`.
+2. **Docker-Hub-Tags prüfen** im Owner-Browser nach Login.
+3. **WinDevicePilot manuell neu starten** (Owner) — wurde durch meinen Port-Kill-Fehler abgeschossen.
+4. Falls 3D-Render-Qualität noch nicht reicht: Synty-Pack ($164 one-time, ADR-010 listed alle Optionen) oder Quaternius-Pack als CC0-Alternative.
+5. Sonst weiter mit Gameplay: Wave 2..N + Score + Audio + Tuning.
