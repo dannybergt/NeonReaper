@@ -31,3 +31,6 @@ assets/atlas/raw/
 # Source ZIP archives — extracted content under assets/source/<name>/ is
 # committed, but the redundant zip is not.
 assets/source/*.zip
+
+# Claude-Code-Worktrees (executor-Subagents, AGENTS.md §4 Phase 3)
+.claude/worktrees/
