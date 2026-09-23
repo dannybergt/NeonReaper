@@ -6,6 +6,8 @@
 
 ## Jetzt
 
+- **Pausiert seit 2026-09-23** (Betreiber-Entscheidung). fleet: `status=pausiert`, es laufen
+  keine automatischen Arbeiten; Dependabot/Sync-PRs werden nicht aktiv bearbeitet.
 - **Phase:** Lane-Squad-Defense, Phase 3d (Polish-Pass) abgeschlossen; Wave 1 hand-scripted,
   3D-gerenderter Charakter-Atlas (ADR-009, ADR-010). Seit 2026-05-17 keine Spiel-Änderung.
 - **Default-Branch auf GitHub:** `feature/genre-pivot-lane-defense` (nicht `main`).
@@ -23,20 +25,22 @@
 - **Archiv-Branches:** `feature/phase-1-2-progression-pressure` (8a41899) und
   `feature/phase-3-visual-pivot` (6380f2c) bleiben als Archiv; beide sind Vorfahren des
   Default-Branches.
-- **Laufend:** nichts. Branch dieser Umstellung: `docs/state-v2` (PR offen).
+- **Laufend:** nichts.
 
 ## Nächster Schritt
 
-- [mensch:FREIGABE] PR `docs/state-v2` (STATE v2-Umstellung) mergen.
-- [mensch:entscheidung] Default-Branch: `main` auf den Stand von `feature/genre-pivot-lane-defense` bringen und wieder als Default setzen? Solange nicht, baut ein Merge in den Default-Branch kein Image.
-- [betreiber:hub.docker.com] Nach Login prüfen, ob `dannybergt/neonreaper` existiert und die Tags `0.0.1`, `0.0`, `main`, `latest` trägt; Sichtbarkeit (privat/öffentlich) festhalten. Fertig, wenn der Befund hier unter „Jetzt" steht.
-- [mensch:entscheidung] Polish-Build (3D-Renders, 8-Frame-Walk, Schatten, Boss-Aura) im Browser abnehmen: reicht die Grafikqualität, oder anderes Asset-Pack (kostenpflichtig vs. CC0, Optionen in ADR-010)?
-- [mensch:entscheidung] Richtung nach der Abnahme: Wave 2..N, Score, Audio, Tuning — Reihenfolge festlegen.
-- [auto:p2] `docs/verification/zielkatalog.md` für NeonReaper ausfüllen (statisches Spiel hinter nginx: `/healthz`, Golden Path Wave 1, Edge Case Squad=0 → „SQUAD WIPED").
-- [mensch:entscheidung] Tuning-Annahmen der Alt-STATE (Historie, „Annahmen": Wave-Dauer, Squad-Start 8, Combat-Tick, Boss-HP) nach `PROJECT_BRIEF.md` übernehmen oder verwerfen? Teilweise überholt (Boss-HP laut Historie inzwischen 320 statt 220).
-- [mensch:entscheidung] Port-Kill-Zwischenfall 2026-05-17 (Historie, „Offene Threads"): Neustart der betroffenen fremden Anwendung erledigt? Dann Thread streichen.
+- [mensch:entscheidung] Wiederaufnahme NeonReaper (pausiert seit 2026-09-23): wann, und mit welchem Punkt aus „Bei Wiederaufnahme“? Bis dahin keine Arbeit.
 
 ## Offene Threads
+
+- **Bei Wiederaufnahme** (derzeit pausiert, nicht abarbeiten):
+  - Default-Branch: `main` auf den Stand von `feature/genre-pivot-lane-defense` bringen und wieder als Default setzen? Solange nicht, baut ein Merge in den Default-Branch kein Image.
+  - Nach Login prüfen, ob `dannybergt/neonreaper` existiert und die Tags `0.0.1`, `0.0`, `main`, `latest` trägt; Sichtbarkeit (privat/öffentlich) festhalten. Fertig, wenn der Befund hier unter „Jetzt" steht.
+  - Polish-Build (3D-Renders, 8-Frame-Walk, Schatten, Boss-Aura) im Browser abnehmen: reicht die Grafikqualität, oder anderes Asset-Pack (kostenpflichtig vs. CC0, Optionen in ADR-010)?
+  - Richtung nach der Abnahme: Wave 2..N, Score, Audio, Tuning — Reihenfolge festlegen.
+  - `docs/verification/zielkatalog.md` für NeonReaper ausfüllen (statisches Spiel hinter nginx: `/healthz`, Golden Path Wave 1, Edge Case Squad=0 → „SQUAD WIPED").
+  - Tuning-Annahmen der Alt-STATE (Historie, „Annahmen": Wave-Dauer, Squad-Start 8, Combat-Tick, Boss-HP) nach `PROJECT_BRIEF.md` übernehmen oder verwerfen? Teilweise überholt (Boss-HP laut Historie inzwischen 320 statt 220).
+  - Port-Kill-Zwischenfall 2026-05-17 (Historie, „Offene Threads"): Neustart der betroffenen fremden Anwendung erledigt? Dann Thread streichen.
 
 - Default-Branch ≠ `main` (siehe „Jetzt"); Ursache in der Historie nicht dokumentiert.
 - Docker-Hub-Sichtbarkeit ungeklärt seit 2026-05-17 (Workflow grün, API 404).
@@ -56,6 +60,8 @@
 
 ## Letzte Session
 
+- **2026-09-23 (Nachtrag):** Projekt auf Betreiberwunsch pausiert; Arbeitspunkte nach
+  „Bei Wiederaufnahme“ verschoben (ohne Tags, damit fleet nichts zieht).
 - **Datum:** 2026-09-23
 - **Was wurde gemacht:** STATE.md auf v2 umgestellt (agent-baseline `state-compact`, autonom).
   Alt-Datei 1:1 nach `docs/history/STATE-2026.md`; Stand gegen `gh`/`git` abgeglichen
