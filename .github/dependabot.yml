@@ -1,0 +1,40 @@
+# Von tools/cve-rollout/rollout.py erzeugt (agent-baseline, Plan CVE-Automatik #3).
+# Je (Oekosystem, Verzeichnis) ein Block mit `groups`: Minor+Patch woechentlich als EIN PR, Majors einzeln
+# (docs/dependabot-groups.md). Weitere Bloecke haengt der Generator nur an; bestehende Zeilen bleiben.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      docker-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      docker-compose-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ["*"]
